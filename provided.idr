@@ -1,6 +1,7 @@
 module Main
 import Data.List
 %language TypeProviders
+%default total
 
 data Choice : List a -> Type
 where Choose : (x : a) ->
