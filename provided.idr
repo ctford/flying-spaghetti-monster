@@ -30,6 +30,7 @@ where
 
 door : Route () ("locked", "opened")
 door = do Begin
+--        Then $ Choose ("locked", "opened") -> Won't compile as it's not a valid transition.
           Then $ Choose ("locked", "closed")
           Then $ Choose ("closed", "closed")
           Then $ Choose ("closed", "opened")
