@@ -3,53 +3,32 @@ import Data.List
 %language TypeProviders
 
 data Choice : List a -> Type
-where Is : (x : a) ->
-           {xs : List a} ->
-           {auto p : Elem x xs} ->
-           Choice xs
+where Choose : (x : a) ->
+               {xs : List a} ->
+               {auto p : Elem x xs} ->
+               Choice xs
 
-states : List String
-states = ["start", "locked", "closed", "opened"]
-
-State : Type
-State = Choice states
-
-transitions : List (State, State)
+transitions : List (String, String)
 transitions =
-  [(Is "locked", Is "closed"),
-  (Is "start", Is "start"),
-  (Is "start", Is "closed"),
-  (Is "closed", Is "locked"),
-  (Is "closed", Is "closed"),
-  (Is "closed", Is "opened")]
+  [("locked", "closed"),
+  ("closed", "locked"),
+  ("closed", "closed"),
+  ("closed", "opened")]
 
 Transition : Type
 Transition = Choice transitions
 
-ring : Transition
-ring = Is (Is "closed", Is "closed")
+single : Transition -> (String, String)
+single (Choose x) = x
 
-commence : Transition
-commence = Is (Is "start", Is "closed")
-
-Derived : Type
-Derived = (State, State)
-
-solo : Transition -> Derived
-solo (Is (x, y)) = (x, y)
-
-data Command : Type -> (State, State) -> Type
+data Route : Type -> (a, a) -> Type
 where
-  Change : (t : Transition) -> Command () (solo t)
-  Pure   : a -> Command a (Is "start", Is "start")
-  (>>=)  : Command a (s1, s2) -> (a -> Command b (s2, s3)) -> Command b (s1, s3)
+  Begin : Route () (s, s)
+  Then  : (t : Transition) -> Route () (single t)
+  (>>=) : Route a (s1, s2) -> (a -> Route b (s2, s3)) -> Route b (s1, s3)
 
-doorProg : Command () (Is "start", Is "closed")
-doorProg = do Pure ()
-              Change commence
-              Change ring
---              Change commence
---              Open
---              Close
-
--- %provide (fsm : State) with FsmType "solo" ["bar", "baz"]
+door : Route () ("locked", "opened")
+door = do Begin
+          Then $ Choose ("locked", "closed")
+          Then $ Choose ("closed", "closed")
+          Then $ Choose ("closed", "opened")
