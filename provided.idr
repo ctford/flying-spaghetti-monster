@@ -2,57 +2,54 @@ module Main
 import Data.List
 %language TypeProviders
 
---data A : a -> Type
---where The : (x : a) -> A x
+data Choice : List a -> Type
+where Is : (x : a) ->
+           {xs : List a} ->
+           {auto p : Elem x xs} ->
+           Choice xs
 
-data Selection : List a -> Type
-where Select   : (x : a) ->
-                 {xs : List a} ->
-                 {auto p : Elem x xs} ->
-                 Selection xs
+states : List String
+states = ["start", "locked", "closed", "opened"]
 
 State : Type
-State = Selection ["locked", "closed", "opened"] 
+State = Choice states
+
+transitions : List (State, State)
+transitions =
+  [(Is "locked", Is "closed"),
+  (Is "start", Is "start"),
+  (Is "start", Is "closed"),
+  (Is "closed", Is "locked"),
+  (Is "closed", Is "closed"),
+  (Is "closed", Is "opened")]
 
 Transition : Type
-Transition = Selection [("locked", "closed"), ("closed", "locked"), ("closed", "opened")]
+Transition = Choice transitions
 
-data Command : Type -> State -> State -> Type
+ring : Transition
+ring = Is (Is "closed", Is "closed")
+
+commence : Transition
+commence = Is (Is "start", Is "closed")
+
+Derived : Type
+Derived = (State, State)
+
+solo : Transition -> Derived
+solo (Is (x, y)) = (x, y)
+
+data Command : Type -> (State, State) -> Type
 where
-  Open  : Command () (Select "closed") (Select "opened")
-  Close : Command () (Select "opened") (Select "closed")
-  Ring  : Command () (Select "closed") (Select "closed")
-  Pure  : a -> Command a state state
-  (>>=) : Command a s1 s2 -> (a -> Command b s2 s3) -> Command b s1 s3
+  Change : (t : Transition) -> Command () (solo t)
+  Pure   : a -> Command a (Is "start", Is "start")
+  (>>=)  : Command a (s1, s2) -> (a -> Command b (s2, s3)) -> Command b (s1, s3)
 
-doorProg : Command () (Select "closed") (Select "closed")
-doorProg = do Ring
-              Open
-              Close
+doorProg : Command () (Is "start", Is "closed")
+doorProg = do Pure ()
+              Change commence
+              Change ring
+--              Change commence
+--              Open
+--              Close
 
---opened : Type
---opened = Selection (A Void) ["closed"]
-
---tristate : List String -> List String -> List String -> (Type, Type, Type)
---tristate xs ys zs = (Selection xs, Selection ys, Selection zs)
-
---state : (String, List String) -> (String, Type)
---state (name, inbound) = (name, Selection inbound)
-
---data FSM : Type
---where
---  States : List State -> FSM
-
---door : FSM
---door = States [NodeAndEdges "foo" Selection ["bar", "baz"]]
-
---session : door
---session = ?foo
-
---member : Nat -> (n : Nat ** (Elem n [n, 2, 3]))
---member x = (x ** (the (Elem x [x, 2, 3]) Here))
-
---FsmType : String -> List String -> IO (Provider State)
---FsmType name names = pure $ Provide $ NodeAndEdges name names
-
--- %provide (fsm : State) with FsmType "foo" ["bar", "baz"]
+-- %provide (fsm : State) with FsmType "solo" ["bar", "baz"]
