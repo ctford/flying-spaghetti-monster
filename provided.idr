@@ -3,6 +3,13 @@ import Data.List
 %language TypeProviders
 %default total
 
+-- A Choice is a type representing a discrete set of choices.
+data Choice : List a -> Type
+where Choose : (x : a) ->
+               {xs : List a} ->
+               {auto p : Elem x xs} ->
+               Choice xs
+
 -- Read a list of pairs from a file.
 readSteps : String -> IO (Either FileError (List (String, String)))
 readSteps filename =
@@ -13,26 +20,16 @@ readSteps filename =
         pair _ = []
 
 -- A type provider providing a list of steps.
-FSM : String -> IO (Provider (List (String, String)))
+FSM : String -> IO (Provider Type)
 FSM filename =
   do result <- readSteps filename
      pure $
        case result of
          Left error => Error $ "Unable to read steps file: " ++ filename
-         Right steps => Provide steps
-
-%provide (steps : List (String, String)) with FSM "steps.txt"
-
--- A Choice is a type representing a discrete set of choices.
-data Choice : List a -> Type
-where Choose : (x : a) ->
-               {xs : List a} ->
-               {auto p : Elem x xs} ->
-               Choice xs
+         Right steps => Provide $ Choice steps
 
 -- A choice between the valid steps.
-Step : Type
-Step = Choice steps
+%provide (Step : Type) with FSM "steps.txt"
 
 -- Deconstruct a step into its states.
 single : Step -> (String, String)
