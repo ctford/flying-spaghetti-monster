@@ -4,12 +4,12 @@ import Data.List
 %access public export
 %default total
 
--- A Choice is a type representing a discrete set of choices.
+-- A Choice is a type representing a discrete set of alternatives.
 data Choice : List a -> Type
-where Choose : (x : a) ->
-               {xs : List a} ->
-               {auto p : Elem x xs} ->
-               Choice xs
+where Choose : (alternative : a) ->
+               {alternatives : List a} ->
+               {auto membershipProof : Elem alternative alternatives} ->
+               Choice alternatives
 
 -- Read a list of transitions from a file.
 readTransitions : String -> IO (Either FileError (List (String, String)))
@@ -17,7 +17,7 @@ readTransitions filename =
   do result <- readFile filename
      pure $ map (pair . words) result
   where pair : List String -> List (String, String)
-        pair (x1::x2::xs) = (x1, x2)::(pair xs)
+        pair (source::destination::rest) = (source, destination)::(pair rest)
         pair _ = []
 
 -- Use the allowed transitions to define a finite state machine type.
@@ -28,9 +28,9 @@ where
   Then  : (t : transition) ->
           Command step convert () (convert t)
 
-  (>>=) : Command transition convert a (s1, s2) ->
-          (a -> Command transition convert b (s2, s3)) ->
-          Command transition convert b (s1, s3)
+  (>>=) : Command transition convert a (beginning, middle) ->
+          (a -> Command transition convert b (middle, end)) ->
+          Command transition convert b (beginning, end)
 
 -- Encode a list of transitions into a session type.
 encode : List (String, String) -> (String, String) -> Type
