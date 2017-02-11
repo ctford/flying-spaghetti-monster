@@ -5,7 +5,7 @@ import Data.List
 %default total
 
 -- A session type that enforces valid transitions.
-%provide (Session : ((String, String) -> Type)) with Protocol "transitions.txt"
+%provide (Session : (Path -> Type)) with Protocol "transitions.txt"
 
 -- An implementation of the protocol.
 door : Session ("locked", "opened")
