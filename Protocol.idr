@@ -20,10 +20,6 @@ readTransitions filename =
         pair (x1::x2::xs) = (x1, x2)::(pair xs)
         pair _ = []
 
--- Deconstruct a transition into its source and destination states.
-single : (xs : List (String, String)) -> (Choice xs) -> (String, String)
-single _ (Choose x) = x
-
 -- Use the allowed transitions to define a finite state machine type.
 data Command : (transition : Type) -> (convert : (step -> (String, String))) -> Type -> (String, String) -> Type
 where
@@ -33,6 +29,12 @@ where
           (a -> Command transition convert b (s2, s3)) ->
           Command transition convert b (s1, s3)
 
+-- Encode a list of transitions into a session type.
+encode : List (String, String) -> (String, String) -> Type
+encode transitions = Command (Choice transitions) (single transitions) ()
+  where single : (xs : List (String, String)) -> (Choice xs) -> (String, String)
+        single _ (Choose x) = x
+
 -- A type provider providing a list of steps.
 Protocol : String -> IO (Provider ((String, String) -> Type))
 Protocol filename =
@@ -40,4 +42,4 @@ Protocol filename =
      pure $
        case result of
          Left error => Error $ "Unable to read transitions file: " ++ filename
-         Right transitions => Provide $ Command (Choice transitions) (single transitions) ()
+         Right transitions => Provide $ encode transitions
