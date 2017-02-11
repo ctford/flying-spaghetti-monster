@@ -1,6 +1,12 @@
 # Elba
 An Idris type provider for communicating type-checkable protocols.
 
+## FFI
+
+Idris Type Providers depend on a foreign function interface. That's turned off by default in the version of Idris on Stack. To install with it enabled:
+
+    stack install idris --flag idris:FFI --flag idris:extra-deps libffi-0.1
+
 ## References
 
 * [Multiparty Asynchronous Session Types](http://www.doc.ic.ac.uk/~yoshida/multiparty/multiparty.pdf)

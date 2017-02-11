@@ -3,13 +3,15 @@ import Data.List
 %language TypeProviders
 %default total
 
--- A list of valid steps that could eventually come from a type provider.
-steps : List (String, String)
-steps =
+-- A type provider providing a list of steps.
+FSM : IO (Provider (List (String, String)))
+FSM = pure $ Provide
   [("locked", "closed"),
   ("closed", "locked"),
   ("closed", "closed"),
   ("closed", "opened")]
+
+%provide (steps : List (String, String)) with FSM
 
 -- A Choice is a type representing a discrete set of choices.
 data Choice : List a -> Type
