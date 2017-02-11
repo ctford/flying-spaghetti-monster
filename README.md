@@ -1,4 +1,4 @@
-# Elba
+# Flying Spaghetti Monster
 An Idris type provider for communicating type-checkable protocols.
 
 ## FFI
