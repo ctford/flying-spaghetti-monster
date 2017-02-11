@@ -11,14 +11,15 @@ readSteps filename = map (map (pair . words)) (readFile filename)
         pair _ = []
 
 -- A type provider providing a list of steps.
-FSM : IO (Provider (List (String, String)))
-FSM = do result <- readSteps "steps.txt"
-         pure $
-           case result of
-             Left error => Error "Unable to read steps file."
-             Right steps => Provide steps
+FSM : String -> IO (Provider (List (String, String)))
+FSM filename =
+  do result <- readSteps filename
+     pure $
+       case result of
+         Left error => Error $ "Unable to read steps file: " ++ filename
+         Right steps => Provide steps
 
-%provide (steps : List (String, String)) with FSM
+%provide (steps : List (String, String)) with FSM "steps.txt"
 
 -- A Choice is a type representing a discrete set of choices.
 data Choice : List a -> Type
