@@ -1,6 +1,10 @@
 # Flying Spaghetti Monster
 An Idris type provider for communicating type-checkable protocols.
 
+## Usage
+
+See `Example.idr`.
+
 ## FFI
 
 Idris Type Providers depend on a foreign function interface. That's turned off by default in the version of Idris on Stack. To install with it enabled:
