@@ -1,6 +1,7 @@
-module Main
+module Protocol
 import Data.List
-%language TypeProviders
+
+%access public export
 %default total
 
 -- A Choice is a type representing a discrete set of choices.
@@ -40,14 +41,3 @@ Protocol filename =
        case result of
          Left error => Error $ "Unable to read steps file: " ++ filename
          Right steps => Provide $ Path (Choice steps) (single steps) ()
-
--- A type that enforces valid steps.
-%provide (Route : ((String, String) -> Type)) with Protocol "steps.txt"
-
--- An example implementation of our finite state machine.
-door : Route ("locked", "opened")
-door = do Begin
---        Then $ Choose ("locked", "opened") -> Won't compile as it's not a valid step.
-          Then $ Choose ("locked", "closed")
-          Then $ Choose ("closed", "closed")
-          Then $ Choose ("closed", "opened")
