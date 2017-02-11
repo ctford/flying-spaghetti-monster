@@ -21,20 +21,20 @@ readTransitions filename =
         pair _ = []
 
 -- Use the allowed transitions to define a finite state machine type.
-data Command : (transition : Type) -> (convert : (step -> (String, String))) -> Type -> (String, String) -> Type
+data Command : Type -> (transition : Type) -> (convert : (transition -> (String, String))) -> (String, String) -> Type
 where
-  Begin : Command transition convert () (state, state)
+  Begin : Command () transition convert (state, state)
 
   Then  : (t : transition) ->
-          Command step convert () (convert t)
+          Command () transition convert (convert t)
 
-  (>>=) : Command transition convert a (beginning, middle) ->
-          (a -> Command transition convert b (middle, end)) ->
-          Command transition convert b (beginning, end)
+  (>>=) : Command a transition convert (beginning, middle) ->
+          (a -> Command b transition convert (middle, end)) ->
+          Command b transition convert (beginning, end)
 
 -- Encode a list of transitions into a session type.
 encode : List (String, String) -> (String, String) -> Type
-encode transitions = Command (Choice transitions) single ()
+encode transitions = Command () (Choice transitions) single
   where single : {auto xs : List (String, String)} -> (Choice xs) -> (String, String)
         single (Choose x) = x
 
