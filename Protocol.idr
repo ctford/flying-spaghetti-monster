@@ -24,16 +24,19 @@ readTransitions filename =
 data Command : (transition : Type) -> (convert : (step -> (String, String))) -> Type -> (String, String) -> Type
 where
   Begin : Command transition convert () (state, state)
-  Then  : (t : transition) -> Command step convert () (convert t)
+
+  Then  : (t : transition) ->
+          Command step convert () (convert t)
+
   (>>=) : Command transition convert a (s1, s2) ->
           (a -> Command transition convert b (s2, s3)) ->
           Command transition convert b (s1, s3)
 
 -- Encode a list of transitions into a session type.
 encode : List (String, String) -> (String, String) -> Type
-encode transitions = Command (Choice transitions) (single transitions) ()
-  where single : (xs : List (String, String)) -> (Choice xs) -> (String, String)
-        single _ (Choose x) = x
+encode transitions = Command (Choice transitions) single ()
+  where single : {auto xs : List (String, String)} -> (Choice xs) -> (String, String)
+        single (Choose x) = x
 
 -- A type provider providing a list of steps.
 Protocol : String -> IO (Provider ((String, String) -> Type))
