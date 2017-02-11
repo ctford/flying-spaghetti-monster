@@ -24,28 +24,28 @@ single : (xs : List (String, String)) -> (Choice xs) -> (String, String)
 single _ (Choose x) = x
 
 -- Use the allowed steps to define a finite state machine type.
-data Route : (step : Type) -> (convert : (step -> (String, String))) -> Type -> (String, String) -> Type
+data Path : (step : Type) -> (convert : (step -> (String, String))) -> Type -> (String, String) -> Type
 where
-  Begin : Route step convert () (state, state)
-  Then  : (s : step) -> Route step convert () (convert s)
-  (>>=) : Route step convert a (s1, s2) ->
-          (a -> Route step convert b (s2, s3)) ->
-          Route step convert b (s1, s3)
+  Begin : Path step convert () (state, state)
+  Then  : (s : step) -> Path step convert () (convert s)
+  (>>=) : Path step convert a (s1, s2) ->
+          (a -> Path step convert b (s2, s3)) ->
+          Path step convert b (s1, s3)
 
 -- A type provider providing a list of steps.
-FSM : String -> IO (Provider ((String, String) -> Type))
-FSM filename =
+Protocol : String -> IO (Provider ((String, String) -> Type))
+Protocol filename =
   do result <- readSteps filename
      pure $
        case result of
          Left error => Error $ "Unable to read steps file: " ++ filename
-         Right steps => Provide $ Route (Choice steps) (single steps) ()
+         Right steps => Provide $ Path (Choice steps) (single steps) ()
 
 -- A type that enforces valid steps.
-%provide (Protocol : ((String, String) -> Type)) with FSM "steps.txt"
+%provide (Route : ((String, String) -> Type)) with Protocol "steps.txt"
 
 -- An example implementation of our finite state machine.
-door : Protocol ("locked", "opened")
+door : Route ("locked", "opened")
 door = do Begin
 --        Then $ Choose ("locked", "opened") -> Won't compile as it's not a valid step.
           Then $ Choose ("locked", "closed")
