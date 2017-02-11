@@ -5,7 +5,9 @@ import Data.List
 
 -- Read a list of pairs from a file.
 readSteps : String -> IO (Either FileError (List (String, String)))
-readSteps filename = map (map (pair . words)) (readFile filename)
+readSteps filename =
+  do result <- readFile filename
+     pure $ map (pair . words) result
   where pair : List String -> List (String, String)
         pair (x1::x2::xs) = (x1, x2)::(pair xs)
         pair _ = []
