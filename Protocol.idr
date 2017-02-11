@@ -24,7 +24,7 @@ readTransitions filename =
         pair _ = []
 
 -- Use the allowed transitions to define a finite state machine type.
-data Command : Type -> (transition : Type) -> (deconstruct : (transition -> Path)) -> Path -> Type
+data Command : Type -> Type -> (transition -> Path) -> Path -> Type
 where
   Begin : Command () transition deconstruct (state, state)
 
