@@ -11,6 +11,13 @@ Idris Type Providers depend on a foreign function interface. That's turned off b
 
     stack install idris --flag idris:FFI --flag idris:extra-deps libffi-0.1
 
+## Todo
+
+- [x] Generate a finite state machine type from data.
+- [x] Supply the type via a type provider.
+- [ ] Read the list of valid steps over HTTP.
+- [ ] Get the type error messages as good as they were before I started abstracting everything.
+
 ## References
 
 * [Multiparty Asynchronous Session Types](http://www.doc.ic.ac.uk/~yoshida/multiparty/multiparty.pdf)
