@@ -3,13 +3,20 @@ import Data.List
 %language TypeProviders
 %default total
 
+-- Read a list of pairs from a file.
+readSteps : String -> IO (Either FileError (List (String, String)))
+readSteps filename = map (map (pair . words)) (readFile filename)
+  where pair : List String -> List (String, String)
+        pair (x1::x2::xs) = (x1, x2)::(pair xs)
+        pair _ = []
+
 -- A type provider providing a list of steps.
 FSM : IO (Provider (List (String, String)))
-FSM = pure $ Provide
-  [("locked", "closed"),
-  ("closed", "locked"),
-  ("closed", "closed"),
-  ("closed", "opened")]
+FSM = do result <- readSteps "steps.txt"
+         pure $
+           case result of
+             Left error => Error "Unable to read steps file."
+             Right steps => Provide steps
 
 %provide (steps : List (String, String)) with FSM
 
