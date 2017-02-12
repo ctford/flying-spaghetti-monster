@@ -35,24 +35,22 @@ locate key ((key, value) :: _) {membership = Here} = value
 locate key (_ :: entries) {membership = (There later)} = locate key entries {membership = later}
 
 -- Use the allowed transitions to define a finite state machine type.
-data Command : Type -> Type -> (transition -> Path) -> Path -> Type
+data Command : Type -> Type -> Path -> Type
 where
-  Begin : Command () transition deconstruct (state, state)
+  Begin : Command () transition (state, state)
 
   Then  : (name : String) ->
           {transitions : List Transition} ->
           {auto membership : Elem name (map Prelude.Basics.fst transitions)} ->
-          Command () (Choice transitions) deconstruct (locate name transitions)
+          Command () (Choice transitions) (locate name transitions)
 
-  (>>=) : Command a transition deconstruct (beginning, middle) ->
-          (a -> Command b transition deconstruct (middle, end)) ->
-          Command b transition deconstruct (beginning, end)
+  (>>=) : Command a transition (beginning, middle) ->
+          (a -> Command b transition (middle, end)) ->
+          Command b transition (beginning, end)
 
 -- Encode a list of transitions into a session type.
 encode : List Transition -> Path -> Type
-encode transitions = Command () (Choice transitions) single
-  where single : {auto xs : List Transition} -> (Choice xs) -> Path
-        single (Choose (_, x)) = x
+encode transitions = Command () (Choice transitions)
 
 -- A type provider providing a list of steps.
 Protocol : String -> IO (Provider (Path -> Type))
