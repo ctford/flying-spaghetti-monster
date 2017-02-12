@@ -1,5 +1,5 @@
 # Flying Spaghetti Monster
-An Idris type provider for communicating type-checkable protocols.
+An [Idris](http://www.idris-lang.org/) type provider for communicating type-checkable protocols.
 
 ![Image of the Flying Spaghetti Monster](https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Touched_by_His_Noodly_Appendage_HD.jpg/320px-Touched_by_His_Noodly_Appendage_HD.jpg "Touched by His Noodly Appendage by Niklas Jansson")
 
