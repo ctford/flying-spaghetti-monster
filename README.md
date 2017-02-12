@@ -6,7 +6,24 @@ An Idris type provider for communicating type-checkable protocols.
 
 ## Usage
 
-See `Example.idr`.
+This is a verified session using the protocol described in `vending-machine.txt`:
+```idris
+-- A session type that enforces valid interactions with a vending machine.
+%provide (VendingMachineSession : (Path -> Type)) with Protocol "vending-machine.txt"
+
+-- An implementation of the protocol.
+vendingMachine : VendingMachineSession ("waiting", "vended")
+vendingMachine = do
+--Action "hack" -> Won't compile as it's not a legal action described in vending-machine.txt.
+  Action "pay"
+  Action "return"
+--Action "vend" -> Won't compile as it's not a legal action *in this state*.
+  Action "pay"
+  Action "select"
+  Action "vend"
+```
+
+See `Example.idr` for more detail.
 
 ## FFI
 
