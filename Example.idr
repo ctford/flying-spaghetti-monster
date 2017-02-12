@@ -29,7 +29,7 @@ vendingMachine = do
 --Then "hack" -> Won't compile as it's not a legal action described in vending-machine.txt.
   Then "pay"
   Then "return"
---Then "vend" -> Won't compile as it's not a legal action *in this state*
+--Then "vend" -> Won't compile as it's not a legal action *in this state*.
   Then "pay"
   Then "select"
   Then "vend"
