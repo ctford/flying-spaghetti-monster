@@ -1,4 +1,4 @@
-locked closed
-closed locked
-closed closed
-closed opened
+unlock locked closed
+lock   closed locked
+ring   closed closed
+open   closed opened

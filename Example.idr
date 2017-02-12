@@ -12,10 +12,10 @@ import Data.List
 door : DoorSession ("locked", "opened")
 door = do
   Begin
---Then $ Choose ("locked", "opened") -> Won't compile as it's not a valid transition from door.txt.
-  Then $ Choose ("locked", "closed")
-  Then $ Choose ("closed", "closed")
-  Then $ Choose ("closed", "opened")
+--Then $ Choose ("smash",  ("locked", "opened")) -> Won't compile as it's not a valid transition from door.txt.
+  Then $ Choose ("unlock", ("locked", "closed"))
+  Then $ Choose ("ring",   ("closed", "closed"))
+  Then $ Choose ("open",   ("closed", "opened"))
 
 
 -- A session type that enforces valid interactions with a vending machine.
@@ -23,11 +23,11 @@ door = do
 
 -- An implementation of the protocol.
 vendingMachine : VendingMachineSession ("waiting", "vended")
-vendingMachinedoor = do
+vendingMachine = do
   Begin
---Then $ Choose ("waiting", "selected") -> Won't compile as it's not a valid transition from vending-machine.txt.
-  Then $ Choose ("waiting", "paid")
-  Then $ Choose ("paid", "waiting")
-  Then $ Choose ("waiting", "paid")
-  Then $ Choose ("paid", "selected")
-  Then $ Choose ("selected", "vended")
+--Then $ Choose ("hack",   ("waiting", "selected")) -> Won't compile as it's not a valid transition from vending-machine.txt.
+  Then $ Choose ("pay",    ("waiting", "paid"))
+  Then $ Choose ("return", ("paid", "waiting"))
+  Then $ Choose ("pay",    ("waiting", "paid"))
+  Then $ Choose ("select", ("paid", "selected"))
+  Then $ Choose ("vend",   ("selected", "vended"))

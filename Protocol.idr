@@ -11,16 +11,21 @@ where Choose : (alternative : a) ->
                {auto membershipProof : Elem alternative alternatives} ->
                Choice alternatives
 
+-- A path between a source and a destination state.
 Path : Type
 Path = (String, String)
 
+-- A named path.
+Transition : Type
+Transition = (String, Path)
+
 -- Read a list of transitions from a file.
-readTransitions : String -> IO (Either FileError (List Path))
+readTransitions : String -> IO (Either FileError (List Transition))
 readTransitions filename =
   do result <- readFile filename
      pure $ map (pair . words) result
-  where pair : List String -> List Path
-        pair (source::destination::rest) = (source, destination)::(pair rest)
+  where pair : List String -> List Transition
+        pair (name::source::destination::rest) = (name, (source, destination))::(pair rest)
         pair _ = []
 
 -- Use the allowed transitions to define a finite state machine type.
@@ -36,10 +41,10 @@ where
           Command b transition deconstruct (beginning, end)
 
 -- Encode a list of transitions into a session type.
-encode : List Path -> Path -> Type
+encode : List Transition -> Path -> Type
 encode transitions = Command () (Choice transitions) single
-  where single : {auto xs : List Path} -> (Choice xs) -> Path
-        single (Choose x) = x
+  where single : {auto xs : List Transition} -> (Choice xs) -> Path
+        single (Choose (_, x)) = x
 
 -- A type provider providing a list of steps.
 Protocol : String -> IO (Provider (Path -> Type))

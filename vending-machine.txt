@@ -1,4 +1,4 @@
-waiting paid
-paid waiting
-paid selected
-selected vended
+pay    waiting paid
+return paid waiting
+select paid selected
+vend   selected vended
