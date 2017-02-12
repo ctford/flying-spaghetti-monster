@@ -12,10 +12,11 @@ import Data.List
 door : DoorSession ("locked", "opened")
 door = do
   Begin
---Then $ Choose ("smash",  ("locked", "opened")) -> Won't compile as it's not a valid transition from door.txt.
-  Then $ Choose ("unlock", ("locked", "closed"))
-  Then $ Choose ("ring",   ("closed", "closed"))
-  Then $ Choose ("open",   ("closed", "opened"))
+--Act "smash"  -> Won't compile because it's not a valid action.
+  Act "unlock"
+--Act "unlock" -> Won't compile because it's not a valid action *in this state*.
+  Act "ring"
+  Act "open"
 
 
 -- A session type that enforces valid interactions with a vending machine.
