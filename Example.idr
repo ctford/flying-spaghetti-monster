@@ -26,9 +26,10 @@ door = do
 vendingMachine : VendingMachineSession ("waiting", "vended")
 vendingMachine = do
   Begin
---Then $ Choose ("hack",   ("waiting", "selected")) -> Won't compile as it's not a valid transition from vending-machine.txt.
-  Then $ Choose ("pay",    ("waiting", "paid"))
-  Then $ Choose ("return", ("paid", "waiting"))
-  Then $ Choose ("pay",    ("waiting", "paid"))
-  Then $ Choose ("select", ("paid", "selected"))
-  Then $ Choose ("vend",   ("selected", "vended"))
+--Act "hack" -> Won't compile as it's not a valid action.
+  Act "pay"
+  Act "return"
+--Act "vend" -> Won't compile as it's not a valid action *in this state*
+  Act "pay"
+  Act "select"
+  Act "vend"
