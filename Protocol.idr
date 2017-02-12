@@ -28,6 +28,7 @@ readTransitions filename =
         pair (name::source::destination::rest) = (name, (source, destination))::(pair rest)
         pair _ = []
 
+-- Use a membership proof to reliably find a tuple in a list.
 locate : (key : a) -> (entries : List (a, b)) -> {auto membership : Elem key (map Prelude.Basics.fst entries)} -> b
 locate _ [] {membership} = absurd membership
 locate key ((key, value) :: _) {membership = Here} = value
@@ -38,10 +39,7 @@ data Command : Type -> Type -> (transition -> Path) -> Path -> Type
 where
   Begin : Command () transition deconstruct (state, state)
 
-  Then  : (t : transition) ->
-          Command () transition deconstruct (deconstruct t)
-
-  Act   : (name : String) ->
+  Then  : (name : String) ->
           {transitions : List Transition} ->
           {auto membership : Elem name (map Prelude.Basics.fst transitions)} ->
           Command () (Choice transitions) deconstruct (locate name transitions)

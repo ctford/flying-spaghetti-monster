@@ -12,11 +12,11 @@ import Data.List
 door : DoorSession ("locked", "opened")
 door = do
   Begin
---Act "smash"  -> Won't compile because it's not a valid action.
-  Act "unlock"
---Act "unlock" -> Won't compile because it's not a valid action *in this state*.
-  Act "ring"
-  Act "open"
+--Then "smash"  -> Won't compile because it's not a legal action described in door.txt.
+  Then "unlock"
+--Then "unlock" -> Won't compile because it's not a legal action *in this state*.
+  Then "ring"
+  Then "open"
 
 
 -- A session type that enforces valid interactions with a vending machine.
@@ -26,10 +26,10 @@ door = do
 vendingMachine : VendingMachineSession ("waiting", "vended")
 vendingMachine = do
   Begin
---Act "hack" -> Won't compile as it's not a valid action.
-  Act "pay"
-  Act "return"
---Act "vend" -> Won't compile as it's not a valid action *in this state*
-  Act "pay"
-  Act "select"
-  Act "vend"
+--Then "hack" -> Won't compile as it's not a legal action described in vending-machine.txt.
+  Then "pay"
+  Then "return"
+--Then "vend" -> Won't compile as it's not a legal action *in this state*
+  Then "pay"
+  Then "select"
+  Then "vend"
