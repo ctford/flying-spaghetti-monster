@@ -28,6 +28,11 @@ readTransitions filename =
         pair (name::source::destination::rest) = (name, (source, destination))::(pair rest)
         pair _ = []
 
+locate : Eq a => (key : a) -> (entries : List (a, b)) -> {auto membership : Elem key (map Prelude.Basics.fst entries)} -> b
+locate {membership} _ [] = absurd membership
+locate {membership = Here} key ((key, value) :: _) = value
+locate {membership = (There later)} key (_ :: entries) = locate key entries {membership = later}
+
 -- Use the allowed transitions to define a finite state machine type.
 data Command : Type -> Type -> (transition -> Path) -> Path -> Type
 where
