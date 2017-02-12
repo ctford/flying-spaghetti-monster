@@ -45,4 +45,5 @@ Idris Type Providers depend on a foreign function interface. That's turned off b
 * [Propositions as Sessions](http://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-sessions/propositions-as-sessions-jfp.pdf)
 * [Scribble](http://www.scribble.org/)
 * [Type-Driven Development of Concurrent Communicating Systems](https://eb.host.cs.st-andrews.ac.uk/drafts/tdd-conc.pdf)
+* [Type-Driven Development with Idris](https://www.manning.com/books/type-driven-development-with-idris)
 * [Type Providers in Idris](http://docs.idris-lang.org/en/latest/guides/type-providers-ffi.html)
