@@ -4,7 +4,7 @@ import Data.List
 %access public export
 %default total
 
--- A Choice is a type representing a discrete set of alternatives.
+-- A discrete set of alternatives.
 data Choice : List a -> Type
 where Choose : (alternative : a) ->
                {alternatives : List a} ->
@@ -18,15 +18,6 @@ Path = (String, String)
 -- A named path.
 Transition : Type
 Transition = (String, Path)
-
--- Read a list of transitions from a file.
-readTransitions : String -> IO (Either FileError (List Transition))
-readTransitions filename =
-  do result <- readFile filename
-     pure $ map (pair . words) result
-  where pair : List String -> List Transition
-        pair (name::source::destination::rest) = (name, (source, destination))::(pair rest)
-        pair _ = []
 
 -- Use a membership proof to reliably find a tuple in a list.
 locate : (key : a) -> (entries : List (a, b)) -> {auto membership : Elem key (map Prelude.Basics.fst entries)} -> b
@@ -49,6 +40,15 @@ where
 -- Encode a list of transitions into a session type.
 encode : List Transition -> Path -> Type
 encode transitions = Command () (Choice transitions)
+
+-- Read a list of transitions from a file.
+readTransitions : String -> IO (Either FileError (List Transition))
+readTransitions filename =
+  do result <- readFile filename
+     pure $ map (pair . words) result
+  where pair : List String -> List Transition
+        pair (name::source::destination::rest) = (name, (source, destination))::(pair rest)
+        pair _ = []
 
 -- A type provider providing a list of steps.
 Protocol : String -> IO (Provider (Path -> Type))
