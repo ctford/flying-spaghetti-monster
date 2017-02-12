@@ -23,6 +23,17 @@ vendingMachine = do
   Action "vend"
 ```
 
+If you try and use the illegal action `"hack"`, you'll get the following *compilation* error:
+
+```
+Example.idr:27:10:When checking right hand side of vendingMachine with expected type
+        VendingMachineSession ("waiting", "vended")
+
+When checking argument membership to constructor Protocol.Action:
+        Can't find a value of type
+                Elem "hack" ["pay", "return", "select", "vend"]
+```
+
 See [`Example.idr`](Example.idr) for more detail.
 
 ## FFI
