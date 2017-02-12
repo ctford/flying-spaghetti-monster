@@ -34,6 +34,50 @@ When checking argument membership to constructor Protocol.Action:
                 Elem "hack" ["pay", "return", "select", "vend"]
 ```
 
+The Idris compiler reads the description of the protocol and then type checks it. Even though the actions are specified by strings, Idris is able to verify that they're within the set of actions specified.
+
+But that's not all. The Idris compiler is able to type check that the order of the actions fits the specified protocol. If you try and use the legal action `"vend"` at the wrong time, you'll get another *compilation* error.
+
+It's a little long, but it clearly indicates that there's no `"vend"` action that has the appropriate source and destination states:
+
+```
+Example.idr:31:3:When checking right hand side of vendingMachine with expected type
+        VendingMachineSession ("waiting", "vended")
+
+When checking an application of constructor Protocol.>>=:
+        Type mismatch between
+                Command ()
+                        (Choice [("pay", "waiting", "paid"),
+                                 ("return", "paid", "waiting"),
+                                 ("select", "paid", "selected"),
+                                 ("vend", "selected", "vended")])
+                        (locate "vend"
+                                [("pay", "waiting", "paid"),
+                                 ("return", "paid", "waiting"),
+                                 ("select", "paid", "selected"),
+                                 ("vend", "selected", "vended")])
+                (Type of Action "vend")
+        and
+                Command ()
+                        (Choice [("pay", "waiting", "paid"),
+                                 ("return", "paid", "waiting"),
+                                 ("select", "paid", "selected"),
+                                 ("vend", "selected", "vended")])
+                        ("waiting", "waiting")
+                (Expected type)
+
+        Specifically:
+                Type mismatch between
+                        locate "vend" [("pay", "waiting", "paid"),
+                                       ("return", "paid", "waiting"),
+                                       ("select", "paid", "selected"),
+                                       ("vend", "selected", "vended")]
+                and
+                        ("waiting", "waiting")
+                        
+Unification failure
+```
+
 See [`Example.idr`](Example.idr) for more detail.
 
 ## FFI
