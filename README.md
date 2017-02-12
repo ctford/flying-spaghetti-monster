@@ -35,8 +35,9 @@ Idris Type Providers depend on a foreign function interface. That's turned off b
 
 - [x] Generate a finite state machine type from data.
 - [x] Supply the type via a type provider.
-- [ ] Read the list of valid steps over HTTP.
 - [x] Get the type error messages as good as they were before I started abstracting everything.
+- [ ] Read the list of valid steps over HTTP.
+- [ ] Set up a sample protocol registry.
 
 ## References
 
