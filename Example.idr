@@ -11,12 +11,11 @@ import Data.List
 -- An implementation of the protocol.
 door : DoorSession ("locked", "opened")
 door = do
-  Begin
---Then "smash"  -> Won't compile because it's not a legal action described in door.txt.
-  Then "unlock"
---Then "unlock" -> Won't compile because it's not a legal action *in this state*.
-  Then "ring"
-  Then "open"
+--Action "smash"  -> Won't compile because it's not a legal action described in door.txt.
+  Action "unlock"
+--Action "unlock" -> Won't compile because it's not a legal action *in this state*.
+  Action "ring"
+  Action "open"
 
 
 -- A session type that enforces valid interactions with a vending machine.
@@ -25,11 +24,10 @@ door = do
 -- An implementation of the protocol.
 vendingMachine : VendingMachineSession ("waiting", "vended")
 vendingMachine = do
-  Begin
---Then "hack" -> Won't compile as it's not a legal action described in vending-machine.txt.
-  Then "pay"
-  Then "return"
---Then "vend" -> Won't compile as it's not a legal action *in this state*.
-  Then "pay"
-  Then "select"
-  Then "vend"
+--Action "hack" -> Won't compile as it's not a legal action described in vending-machine.txt.
+  Action "pay"
+  Action "return"
+--Action "vend" -> Won't compile as it's not a legal action *in this state*.
+  Action "pay"
+  Action "select"
+  Action "vend"

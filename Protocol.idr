@@ -37,16 +37,14 @@ locate key (_ :: entries) {membership = (There later)} = locate key entries {mem
 -- Use the allowed transitions to define a finite state machine type.
 data Command : Type -> Type -> Path -> Type
 where
-  Begin : Command () transition (state, state)
+  Action  : (name : String) ->
+            {transitions : List Transition} ->
+            {auto membership : Elem name (map Prelude.Basics.fst transitions)} ->
+            Command () (Choice transitions) (locate name transitions)
 
-  Then  : (name : String) ->
-          {transitions : List Transition} ->
-          {auto membership : Elem name (map Prelude.Basics.fst transitions)} ->
-          Command () (Choice transitions) (locate name transitions)
-
-  (>>=) : Command a transition (beginning, middle) ->
-          (a -> Command b transition (middle, end)) ->
-          Command b transition (beginning, end)
+  (>>=)   : Command a transition (beginning, middle) ->
+            (a -> Command b transition (middle, end)) ->
+            Command b transition (beginning, end)
 
 -- Encode a list of transitions into a session type.
 encode : List Transition -> Path -> Type
