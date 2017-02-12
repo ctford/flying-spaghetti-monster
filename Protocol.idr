@@ -8,7 +8,7 @@ import Data.List
 data Choice : List a -> Type
 where Choose : (alternative : a) ->
                {alternatives : List a} ->
-               {auto membershipProof : Elem alternative alternatives} ->
+               {auto membership : Elem alternative alternatives} ->
                Choice alternatives
 
 -- A path between a source and a destination state.
