@@ -45,12 +45,12 @@ encode transitions = Command () (Choice transitions)
 readTransitions : String -> IO (Either FileError (List Transition))
 readTransitions filename =
   do result <- readFile filename
-     pure $ map (pair . words) result
-  where pair : List String -> List Transition
-        pair (name::source::destination::rest) = (name, (source, destination))::(pair rest)
-        pair _ = []
+     pure $ map (group . words) result
+  where group : List String -> List Transition
+        group (name::source::destination::rest) = (name, (source, destination))::(group rest)
+        group _ = []
 
--- A type provider providing a list of steps.
+-- Provide a session type derived from encoding the specified file.
 Protocol : String -> IO (Provider (Path -> Type))
 Protocol filename =
   do result <- readTransitions filename
