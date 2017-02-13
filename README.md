@@ -93,6 +93,7 @@ Idris Type Providers depend on a foreign function interface. That's turned off b
 - [x] Get the type error messages as good as they were before I started abstracting everything.
 - [ ] Support transitions that can fail.
 - [ ] Read the list of valid steps over HTTP.
+- [ ] Use error reflection to improve error reporting.
 - [ ] Package it.
 - [ ] Set up a sample protocol registry.
 
