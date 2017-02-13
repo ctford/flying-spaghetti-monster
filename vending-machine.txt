@@ -1,4 +1,4 @@
-pay    waiting paid
-return paid waiting
-select paid selected
-vend   selected vended
+pay     waiting   paid
+return  paid      waiting
+select  paid      selected
+vend    selected  vended
