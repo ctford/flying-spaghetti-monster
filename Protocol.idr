@@ -51,18 +51,13 @@ parse [name, source, destination, alternative] = Just (name, (source, destinatio
 parse [name, source, destination] = Just (name, (source, destination), (source, destination))
 parse _ = Nothing
 
-values : List (Maybe a) -> List a
-values [] = []
-values (Nothing :: xs) = values xs
-values ((Just x) :: xs) = x :: values xs
-
 -- Read a list of transitions from a file.
 readTransitions : String -> IO (Either FileError (List Transition))
 readTransitions filename =
   do contents <- readFile filename
      let entries = map lines contents
-     let parsed  = map (map $ parse . words) entries
-     pure $ map values parsed
+     let parsed  = map (mapMaybe $ parse . words) entries
+     pure $ parsed
 
 -- Provide a session type derived from encoding the specified file.
 Protocol : String -> IO (Provider (Path -> Type))
