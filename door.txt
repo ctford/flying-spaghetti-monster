@@ -1,8 +1,8 @@
-start   ready   locked   locked
+start   ready   locked
 unlock  locked  closed   locked
-lock    closed  locked   jammed
-ring    closed  closed   jammed
+lock    closed  locked
+ring    closed  closed
 open    closed  opened   jammed
 close   opened  closed   jammed
-quit    jammed  finished finished
-win     opened  finished finished
+quit    jammed  finished
+win     opened  finished
