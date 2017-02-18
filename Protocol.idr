@@ -31,12 +31,12 @@ where
   Action  : (name : String) ->
             {transitions : List Transition} ->
             {auto membership : Elem name (map Prelude.Basics.fst transitions)} ->
-            Command () (Choice transitions) (Prelude.Basics.fst (locate name transitions))
+            Command () (Choice transitions) (fst $ locate name transitions)
 
   Failure : (name : String) ->
             {transitions : List Transition} ->
             {auto membership : Elem name (map Prelude.Basics.fst transitions)} ->
-            Command () (Choice transitions) (Prelude.Basics.snd (locate name transitions))
+            Command () (Choice transitions) (snd $ locate name transitions)
 
   (>>=)   : Command a transition (beginning, middle) ->
             (a -> Command b transition (middle, end)) ->
