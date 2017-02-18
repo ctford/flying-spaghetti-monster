@@ -9,13 +9,17 @@ import Data.List
 %provide (DoorSession : (Path -> Type)) with Protocol "door.txt"
 
 -- An implementation of the protocol.
-door : DoorSession ("locked", "opened")
+door : DoorSession ("ready", "finished")
 door = do
+  Action "start"
 --Action "smash"  -> Won't compile because it's not a legal action described in door.txt.
+  Fail   "unlock"
   Action "unlock"
 --Action "unlock" -> Won't compile because it's not a legal action *in this state*.
   Action "ring"
   Action "open"
+  Fail   "close"
+  Action "quit"
 
 
 -- A session type that enforces valid interactions with a vending machine.

@@ -17,7 +17,7 @@ Path = (String, String)
 
 -- A named path.
 Transition : Type
-Transition = (String, Path)
+Transition = (String, Path, String)
 
 -- Use a membership proof to reliably find a tuple in a list.
 locate : (key : a) -> (entries : List (a, b)) -> {auto membership : Elem key (map Prelude.Basics.fst entries)} -> b
@@ -25,13 +25,22 @@ locate _ [] {membership} = absurd membership
 locate key ((key, value) :: _) {membership = Here} = value
 locate key (_ :: entries) {membership = (There later)} = locate key entries {membership = later}
 
+resolve : Bool -> (Path, String) -> Path
+resolve False ((source, _), alternative) = (source, alternative)
+resolve True (path, _) = path
+
 -- Use the allowed transitions to define a finite state machine type.
 data Command : Type -> Type -> Path -> Type
 where
   Action  : (name : String) ->
             {transitions : List Transition} ->
             {auto membership : Elem name (map Prelude.Basics.fst transitions)} ->
-            Command () (Choice transitions) (locate name transitions)
+            Command () (Choice transitions) (resolve True (locate name transitions))
+
+  Fail    : (name : String) ->
+            {transitions : List Transition} ->
+            {auto membership : Elem name (map Prelude.Basics.fst transitions)} ->
+            Command () (Choice transitions) (resolve False (locate name transitions))
 
   (>>=)   : Command a transition (beginning, middle) ->
             (a -> Command b transition (middle, end)) ->
@@ -47,7 +56,7 @@ readTransitions filename =
   do result <- readFile filename
      pure $ map (group . words) result
   where group : List String -> List Transition
-        group (name::source::destination::rest) = (name, (source, destination))::(group rest)
+        group (name::source::destination::alternative::rest) = (name, (source, destination), alternative)::(group rest)
         group _ = []
 
 -- Provide a session type derived from encoding the specified file.
