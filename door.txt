@@ -5,4 +5,4 @@ ring    closed  closed
 open    closed  opened   jammed
 close   opened  closed   jammed
 quit    jammed  finished
-win     opened  finished
+enter   opened  finished
