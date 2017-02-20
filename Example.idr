@@ -8,15 +8,21 @@ import Data.List
 -- A session type that enforces valid interactions with a door.
 %provide (DoorSession : (Path -> Type)) with Protocol "door.txt"
 
+riiing : Nat -> DoorSession("closed", "closed")
+riiing Z = Action "ring"
+riiing (S k) = do
+  Action "ring"
+  riiing k
+
 -- An implementation of the protocol.
-door : Bool -> DoorSession ("ready", "finished")
-door anyoneHome = do
+door : Nat -> Bool -> DoorSession ("ready", "finished")
+door nTimes anyoneHome = do
   Action  "start"
 --Action  "smash"  -> Won't compile because it's not a legal action described in door.txt.
   Failure "unlock"
   Action  "unlock"
 --Action  "unlock" -> Won't compile because it's not a legal action *in this state*.
-  Action  "ring"
+  riiing  nTimes
   if not anyoneHome
      then
           do Failure "open"
