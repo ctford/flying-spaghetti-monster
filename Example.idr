@@ -17,7 +17,7 @@ door anyoneHome = do
   Action  "unlock"
 --Action  "unlock" -> Won't compile because it's not a legal action *in this state*.
   Action  "ring"
-  if anyoneHome
+  if not anyoneHome
      then
           do Failure "open"
              Action "quit"
