@@ -1,3 +1,4 @@
+#name   from      to        alternative
 pay     waiting   paid      broken
 return  paid      waiting   broken
 select  paid      selected  broken

@@ -1,3 +1,4 @@
+#name   from    to       alternative
 start   ready   locked
 unlock  locked  closed   locked
 lock    closed  locked

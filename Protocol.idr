@@ -46,6 +46,9 @@ where
 encode : List Transition -> Path -> Type
 encode transitions = Command True (Choice transitions)
 
+comment : String -> Bool
+comment = isPrefixOf "#"
+
 parse : List String -> Maybe Transition
 parse [name, source, destination, alternative] = Just (name, (source, destination), (source, alternative))
 parse [name, source, destination] = Just (name, (source, destination), (source, destination))
@@ -56,7 +59,8 @@ readTransitions : String -> IO (Either FileError (List Transition))
 readTransitions filename =
   do contents <- readFile filename
      let entries = map lines contents
-     let parsed  = map (mapMaybe $ parse . words) entries
+     let nonComments = map (filter (not . comment)) entries
+     let parsed  = map (mapMaybe $ parse . words) nonComments
      pure $ parsed
 
 -- Provide a session type derived from encoding the specified file.
