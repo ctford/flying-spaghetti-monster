@@ -15,9 +15,8 @@ riiing (S k) = do
   riiing k
 
 -- An implementation of the protocol.
-door : Nat -> Bool -> DoorSession ("ready", "finished")
+door : Nat -> Bool -> DoorSession ("locked", "end")
 door nTimes anyoneHome = do
-  Action  "start"
 --Action  "smash"  -> Won't compile because it's not a legal action described in door.txt.
   Failure "unlock"
   Action  "unlock"
