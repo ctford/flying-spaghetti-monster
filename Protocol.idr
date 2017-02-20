@@ -38,6 +38,9 @@ where
             {auto membership : Elem name (map Prelude.Basics.fst transitions)} ->
             Command False (Choice transitions) (snd $ locate name transitions)
 
+  Noop    : (state : String) ->
+            Command True (Choice transitions) (state, state)
+
   (>>=)   : Command a transition (beginning, middle) ->
             ((a : Bool) -> Command b transition (middle, end)) ->
             Command b transition (beginning, end)
