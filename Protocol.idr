@@ -26,28 +26,28 @@ locate key ((key, value) :: _) {membership = Here} = value
 locate key (_ :: entries) {membership = (There later)} = locate key entries {membership = later}
 
 -- Use the allowed transitions to define a finite state machine type.
-data Command : Bool -> Type -> Path -> Type
+data Command : Type -> Path -> Bool -> Type
 where
   Action  : (name : String) ->
             {transitions : List Transition} ->
             {auto membership : Elem name (map Prelude.Basics.fst transitions)} ->
-            Command True (Choice transitions) (fst $ locate name transitions)
+            Command (Choice transitions) (fst $ locate name transitions) True
 
   Failure : (name : String) ->
             {transitions : List Transition} ->
             {auto membership : Elem name (map Prelude.Basics.fst transitions)} ->
-            Command False (Choice transitions) (snd $ locate name transitions)
+            Command (Choice transitions) (snd $ locate name transitions) False
 
   Noop    : (state : String) ->
-            Command True (Choice transitions) (state, state)
+            Command (Choice transitions) (state, state) True
 
-  (>>=)   : Command a transition (beginning, middle) ->
-            ((a : Bool) -> Command b transition (middle, end)) ->
-            Command b transition (beginning, end)
+  (>>=)   : Command transition (beginning, middle) a ->
+            ((a : Bool) -> Command transition (middle, end) b) ->
+            Command transition (beginning, end) b
 
 -- Encode a list of transitions into a session type.
-encode : List Transition -> Path -> Type
-encode transitions = Command True (Choice transitions)
+encode : List Transition -> Path -> Bool -> Type
+encode transitions = Command (Choice transitions)
 
 comment : String -> Bool
 comment = isPrefixOf "#"
@@ -67,7 +67,7 @@ readTransitions filename =
      pure $ parsed
 
 -- Provide a session type derived from encoding the specified file.
-Protocol : String -> IO (Provider (Path -> Type))
+Protocol : String -> IO (Provider (Path -> Bool -> Type))
 Protocol filename =
   do result <- readTransitions filename
      pure $
