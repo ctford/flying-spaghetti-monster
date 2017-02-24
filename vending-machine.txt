@@ -1,5 +1,5 @@
-#name   from      to        alternative
-pay     waiting   paid      broken
-return  paid      waiting   broken
-select  paid      selected  broken
-vend    selected  vended    broken
+#name   from      to
+pay     waiting   paid
+return  paid      waiting
+select  paid      selected
+vend    selected  vended
