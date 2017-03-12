@@ -30,6 +30,15 @@ door nTimes anyoneHome = do
           do Action "open"
              Action "enter"
 
+from : DoorSession (a, b) success -> String
+from {a} _ = a
+
+to : DoorSession (a, b) success -> String
+to {b} _ = b
+
+run : DoorSession (a, b) success -> List String
+run (x >>= rest) = (from x) :: (run $ rest True)
+run x = [from x, to x]
 
 -- A session type that enforces valid interactions with a vending machine.
 %provide (VendingMachineSession : (Path -> Bool -> Type)) with Protocol "vending-machine.txt"
