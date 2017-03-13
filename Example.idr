@@ -15,20 +15,14 @@ riiing (S k) = do
   riiing k
 
 -- An implementation of the protocol.
-door : Nat -> Bool -> DoorSession ("locked", "end") True
-door nTimes anyoneHome = do
+door : Nat -> DoorSession ("locked", "end") True
+door nTimes = do
 --Action  "smash"  -> Won't compile because it's not a legal action described in door.txt.
-  Failure "unlock"
   Action  "unlock"
 --Action  "unlock" -> Won't compile because it's not a legal action *in this state*.
   riiing  nTimes
-  if not anyoneHome
-     then
-          do Failure "open"
-             Action "quit"
-     else
-          do Action "open"
-             Action "enter"
+  Action "open"
+  Action "enter"
 
 from : DoorSession (a, b) success -> String
 from {a} _ = a
@@ -44,7 +38,6 @@ partial
 runActions : DoorSession (a, b) success -> List String
 runActions (x >>= rest) = (runActions x) ++ (runActions $ rest True)
 runActions (Action x) = [x]
-runActions (Failure x) = [x]
 runActions Noop = []
 
 

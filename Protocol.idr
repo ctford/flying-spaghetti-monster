@@ -34,12 +34,6 @@ where
             {auto membership : Elem (name , p1 , p2) transitions} ->
             Command (Choice transitions) p1 True
 
-  Failure : (name : String) ->
-            {transitions : List Transition} ->
-            {p1 , p2 : Path} ->
-            {auto membership : Elem (name , p1 , p2) transitions} ->
-            Command (Choice transitions) p2 False
-
   Noop    : Command (Choice transitions) (state, state) True
 
   (>>=)   : Command transition (beginning, middle) a ->
