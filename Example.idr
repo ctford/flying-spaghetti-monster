@@ -9,7 +9,7 @@ import Data.List
 %provide (DoorSession : (Path -> Bool -> Type)) with Protocol "door.txt"
 
 riiing : Nat -> DoorSession("closed", "closed") True
-riiing Z = Noop "closed"
+riiing Z = Noop
 riiing (S k) = do
   Action "ring"
   riiing k
