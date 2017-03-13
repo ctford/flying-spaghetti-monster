@@ -43,8 +43,8 @@ run x = [from x, to x]
 partial
 runActions : DoorSession (a, b) success -> List String
 runActions (x >>= rest) = (runActions x) ++ (runActions $ rest True)
---runAactions (Action x) = [x]
---runAactions (Failure x) = [x]
+--runActions (Action x) = [x]
+--runActions (Failure x) = [x]
 runActions Noop = []
 
 
