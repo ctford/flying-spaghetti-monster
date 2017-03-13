@@ -40,6 +40,14 @@ run : DoorSession (a, b) success -> List String
 run (x >>= rest) = (run x) ++ (run $ rest True)
 run x = [from x, to x]
 
+partial
+runActions : DoorSession (a, b) success -> List String
+runActions (x >>= rest) = (runActions x) ++ (runActions $ rest True)
+--runAactions (Action x) = [x]
+--runAactions (Failure x) = [x]
+runActions Noop = []
+
+
 -- A session type that enforces valid interactions with a vending machine.
 %provide (VendingMachineSession : (Path -> Bool -> Type)) with Protocol "vending-machine.txt"
 
