@@ -20,22 +20,22 @@ Transition : Type
 Transition = (String, Path, Path)
 
 -- Use the allowed transitions to define a finite state machine type.
-data Command : Type -> Path -> Bool -> Type
+data Command : Type -> Path -> (result : Type) -> Type
 where
   Action  : (name : String) ->
             {transitions : List Transition} ->
             {p1 , p2 : Path} ->
             {auto membership : Elem (name , p1 , p2) transitions} ->
-            Command (Choice transitions) p1 True
+            Command (Choice transitions) p1 Bool
 
-  Noop    : Command (Choice transitions) (state, state) True
+  Noop    : Command (Choice transitions) (state, state) Bool
 
-  (>>=)   : Command transition (beginning, middle) a ->
-            ((a : Bool) -> Command transition (middle, end) b) ->
-            Command transition (beginning, end) b
+  (>>=)   : Command (Choice transitions) (beginning, middle) Bool ->
+            (Bool -> Command (Choice transitions) (middle, end) Bool) ->
+            Command (Choice transitions) (beginning, end) Bool
 
 -- Encode a list of transitions into a session type.
-encode : List Transition -> Path -> Bool -> Type
+encode : List Transition -> Path -> Type -> Type
 encode transitions = Command (Choice transitions)
 
 comment : String -> Bool
@@ -56,7 +56,7 @@ readTransitions filename =
      pure $ parsed
 
 -- Provide a session type derived from encoding the specified file.
-Protocol : String -> IO (Provider (Path -> Bool -> Type))
+Protocol : String -> IO (Provider (Path -> Type -> Type))
 Protocol filename =
   do result <- readTransitions filename
      pure $
