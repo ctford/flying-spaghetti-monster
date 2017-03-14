@@ -43,3 +43,8 @@ vendingMachine = do
   Action "pay"
   Action "select"
   Action "vend"
+
+runVendingMachine : VendingMachineSession (a, b) success -> List String
+runVendingMachine (x >>= rest) = (runVendingMachine x) ++ (runVendingMachine $ rest True)
+runVendingMachine (Action x) = [x]
+runVendingMachine Noop = []
