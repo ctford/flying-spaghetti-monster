@@ -6,16 +6,16 @@ import Data.List
 
 
 -- A session type that enforces valid interactions with a door.
-%provide (DoorSession : (Path -> Type -> Type)) with Protocol "door.txt"
+%provide (DoorSession : (Path -> Type)) with Protocol "door.txt"
 
-riiing : Nat -> DoorSession("closed", "closed") Bool
+riiing : Nat -> DoorSession("closed", "closed")
 riiing Z = Noop
 riiing (S k) = do
   Action "ring"
   riiing k
 
 -- An implementation of the protocol.
-door : Nat -> DoorSession ("locked", "end") Bool
+door : Nat -> DoorSession ("locked", "end")
 door nTimes = do
 --Action  "smash"  -> Won't compile because it's not a legal action described in door.txt.
   Action  "unlock"
@@ -24,17 +24,17 @@ door nTimes = do
   Action "open"
   Action "enter"
 
-runDoor : DoorSession (a, b) Bool -> List String
+runDoor : DoorSession (a, b) -> List String
 runDoor (x >>= rest) = (runDoor x) ++ (runDoor $ rest True)
 runDoor (Action x) = [x]
 runDoor Noop = []
 
 
 -- A session type that enforces valid interactions with a vending machine.
-%provide (VendingMachineSession : (Path -> Type -> Type)) with Protocol "vending-machine.txt"
+%provide (VendingMachineSession : (Path -> Type)) with Protocol "vending-machine.txt"
 
 -- An implementation of the protocol.
-vendingMachine : VendingMachineSession ("waiting", "vended") Bool
+vendingMachine : VendingMachineSession ("waiting", "vended")
 vendingMachine = do
 --Action "hack" -> Won't compile as it's not a legal action described in vending-machine.txt.
   Action "pay"
@@ -44,7 +44,7 @@ vendingMachine = do
   Action "select"
   Action "vend"
 
-runVendingMachine : VendingMachineSession (a, b) Bool -> List String
+runVendingMachine : VendingMachineSession (a, b) -> List String
 runVendingMachine (x >>= rest) = (runVendingMachine x) ++ (runVendingMachine $ rest True)
 runVendingMachine (Action x) = [x]
 runVendingMachine Noop = []

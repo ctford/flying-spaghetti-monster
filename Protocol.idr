@@ -35,8 +35,8 @@ where
             Command (Choice transitions) (beginning, end) Bool
 
 -- Encode a list of transitions into a session type.
-encode : List Transition -> Path -> Type -> Type
-encode transitions = Command (Choice transitions)
+encode : List Transition -> Path -> Type
+encode transitions path = Command (Choice transitions) path Bool
 
 comment : String -> Bool
 comment = isPrefixOf "#"
@@ -56,7 +56,7 @@ readTransitions filename =
      pure $ parsed
 
 -- Provide a session type derived from encoding the specified file.
-Protocol : String -> IO (Provider (Path -> Type -> Type))
+Protocol : String -> IO (Provider (Path -> Type))
 Protocol filename =
   do result <- readTransitions filename
      pure $
