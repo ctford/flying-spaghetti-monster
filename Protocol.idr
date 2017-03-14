@@ -30,13 +30,15 @@ data Command : Type -> Path -> Bool -> Type
 where
   Action  : (name : String) ->
             {transitions : List Transition} ->
-            {auto membership : Elem name (map Prelude.Basics.fst transitions)} ->
-            Command (Choice transitions) (fst $ locate name transitions) True
+            {p1 , p2 : Path} ->
+            {auto membership : Elem (name , p1 , p2) transitions} ->
+            Command (Choice transitions) p1 True
 
   Failure : (name : String) ->
             {transitions : List Transition} ->
-            {auto membership : Elem name (map Prelude.Basics.fst transitions)} ->
-            Command (Choice transitions) (snd $ locate name transitions) False
+            {p1 , p2 : Path} ->
+            {auto membership : Elem (name , p1 , p2) transitions} ->
+            Command (Choice transitions) p2 False
 
   Noop    : Command (Choice transitions) (state, state) True
 
