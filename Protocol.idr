@@ -15,7 +15,7 @@ where Choose : (alternative : a) ->
 Path : Type
 Path = (String, String)
 
--- A named path.
+-- A named happy and sad path.
 Transition : Type
 Transition = (String, Path, Path)
 
@@ -24,9 +24,9 @@ data Command : Type -> Path -> (result : Type) -> Type
 where
   Action  : (name : String) ->
             {transitions : List Transition} ->
-            {p1 , p2 : Path} ->
-            {auto membership : Elem (name , p1 , p2) transitions} ->
-            Command (Choice transitions) p1 Bool
+            {happy, sad : Path} ->
+            {auto membership : Elem (name, happy, sad) transitions} ->
+            Command (Choice transitions) happy Bool
 
   Noop    : Command (Choice transitions) (state, state) Bool
 
