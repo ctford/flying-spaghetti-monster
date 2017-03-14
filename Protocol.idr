@@ -19,12 +19,6 @@ Path = (String, String)
 Transition : Type
 Transition = (String, Path, Path)
 
--- Use a membership proof to reliably find a tuple in a list.
-locate : (key : a) -> (entries : List (a, b)) -> {auto membership : Elem key (map Prelude.Basics.fst entries)} -> b
-locate _ [] {membership} = absurd membership
-locate key ((key, value) :: _) {membership = Here} = value
-locate key (_ :: entries) {membership = (There later)} = locate key entries {membership = later}
-
 -- Use the allowed transitions to define a finite state machine type.
 data Command : Type -> Path -> Bool -> Type
 where
