@@ -6,11 +6,11 @@ import Data.List
 %access public export
 
 ||| A discrete set of alternatives.
-data Choice : List a -> Type
-where Choose : (alternative : a) ->
-               {alternatives : List a} ->
-               {auto membership : Elem alternative alternatives} ->
-               Choice alternatives
+data Choice : List a -> Type where
+     Choose : (alternative : a) ->
+              {alternatives : List a} ->
+              {auto membership : Elem alternative alternatives} ->
+              Choice alternatives
 
 ||| A path between a source and a destination state.
 Path : Type
@@ -21,19 +21,18 @@ Transition : Type
 Transition = (String, Path, Path)
 
 ||| Use the allowed transitions to define a finite state machine type.
-data Command : Type -> Path -> (result : Type) -> Type
-where
-  Action  : (name : String) ->
-            {transitions : List Transition} ->
-            {happy, sad : Path} ->
-            {auto membership : Elem (name, happy, sad) transitions} ->
-            Command (Choice transitions) happy Bool
+data Command : Type -> Path -> (result : Type) -> Type where
+     Action  : (name : String) ->
+               {transitions : List Transition} ->
+               {happy, sad : Path} ->
+               {auto membership : Elem (name, happy, sad) transitions} ->
+               Command (Choice transitions) happy Bool
 
-  Noop    : Command (Choice transitions) (state, state) Bool
+     Noop    : Command (Choice transitions) (state, state) Bool
 
-  (>>=)   : Command (Choice transitions) (beginning, middle) Bool ->
-            (Bool -> Command (Choice transitions) (middle, end) Bool) ->
-            Command (Choice transitions) (beginning, end) Bool
+     (>>=)   : Command (Choice transitions) (beginning, middle) Bool ->
+               (Bool -> Command (Choice transitions) (middle, end) Bool) ->
+               Command (Choice transitions) (beginning, end) Bool
 
 ||| Encode a list of transitions into a session type.
 encode : List Transition -> Path -> Type
@@ -45,8 +44,10 @@ comment : String -> Bool
 comment = isPrefixOf "#"
 
 parse : List String -> Maybe Transition
-parse [name, source, destination, alternative] = Just (name, (source, destination), (source, alternative))
-parse [name, source, destination] = Just (name, (source, destination), (source, destination))
+parse [name, source, destination, alternative] =
+    Just (name, (source, destination), (source, alternative))
+parse [name, source, destination] =
+    Just (name, (source, destination), (source, destination))
 parse _ = Nothing
 
 ||| Read a list of transitions from a file.
