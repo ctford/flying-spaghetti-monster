@@ -63,8 +63,7 @@ readTransitions filename = pure $ map go !(readFile filename)
 ||| Provide a session type derived from encoding the specified file.
 Protocol : String -> IO (Provider (Path -> Type))
 Protocol filename =
-  do result <- readTransitions filename
-     pure $
-       case result of
-         Left error => Error $ "Unable to read transitions file: " ++ filename
-         Right transitions => Provide $ encode transitions
+    pure $
+    case !(readTransitions filename) of
+      Right transitions => Provide $ encode transitions
+      Left _ => Error $ "Unable to read transitions file: " ++ filename
