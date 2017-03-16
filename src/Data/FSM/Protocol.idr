@@ -1,9 +1,15 @@
+||| Provide session types derived from specifications.
 module Data.FSM.Protocol
+
 import Data.List
 
 %default total
 
 %access public export
+
+-------------
+-- Data Types
+-------------
 
 ||| A discrete set of alternatives.
 data Choice : List a -> Type where
@@ -33,6 +39,10 @@ data Command : Type -> Path -> (result : Type) -> Type where
      (>>=)   : Command (Choice transitions) (beginning, middle) Bool ->
                (Bool -> Command (Choice transitions) (middle, end) Bool) ->
                Command (Choice transitions) (beginning, end) Bool
+
+---------------------------
+-- Parsing Transition Files
+---------------------------
 
 ||| Encode a list of transitions into a session type.
 encode : List Transition -> Path -> Type
