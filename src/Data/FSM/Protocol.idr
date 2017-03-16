@@ -51,12 +51,12 @@ parse _ = Nothing
 
 ||| Read a list of transitions from a file.
 readTransitions : String -> IO (Either FileError (List Transition))
-readTransitions filename =
-  do contents <- readFile filename
-     let entries = map lines contents
-     let nonComments = map (filter (not . comment)) entries
-     let parsed  = map (mapMaybe $ parse . words) nonComments
-     pure $ parsed
+readTransitions filename = pure $ map go !(readFile filename)
+  where
+    go : String -> (List Transition)
+    go = mapMaybe (parse . words) .
+         filter (not . comment) .
+         lines
 
 %access export
 
