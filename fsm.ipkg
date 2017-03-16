@@ -1,0 +1,14 @@
+package fsm
+
+modules = Data.FSM.Protocol
+sourcedir = src
+
+brief = "An Idris type provider for communicating type-checkable protocols."
+readme = README.md
+license = BSD-3
+author = "Chris Ford"
+maintainer = "Chris Ford"
+
+homepage = https://github.com/ctford/flying-spaghetti-monster
+sourceloc = git://git@github.com:ctford/flying-spaghetti-monster.git
+bugtracker = https://github.com/ctford/flying-spaghetti-monster/issues

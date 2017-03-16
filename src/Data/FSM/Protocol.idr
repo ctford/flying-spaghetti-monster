@@ -1,4 +1,4 @@
-module Protocol
+module Data.FSM.Protocol
 import Data.List
 
 %access public export
