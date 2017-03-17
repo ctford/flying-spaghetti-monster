@@ -1,0 +1,9 @@
+package fsm.example
+
+modules    = Example
+
+main       = Example
+executable = runexample
+
+sourcedir  = example
+opts       = "-i ../src -X TypeProviders"
