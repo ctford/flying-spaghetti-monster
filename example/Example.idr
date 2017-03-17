@@ -1,9 +1,16 @@
-import Protocol
+module Example
+
+import Data.FSM.Protocol
 import Data.List
 
 %language TypeProviders
 %default total
 
+%access public export
+
+---------------
+-- Door Example
+---------------
 
 -- A session type that enforces valid interactions with a door.
 %provide (DoorSession : (Path -> Type)) with Protocol "door.txt"
@@ -29,6 +36,9 @@ runDoor (x >>= rest) = (runDoor x) ++ (runDoor $ rest True)
 runDoor (Action x) = [x]
 runDoor Noop = []
 
+--------------------------
+-- Vending Machine Example
+--------------------------
 
 -- A session type that enforces valid interactions with a vending machine.
 %provide (VendingMachineSession : (Path -> Type)) with Protocol "vending-machine.txt"
