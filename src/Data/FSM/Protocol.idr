@@ -50,8 +50,11 @@ encode transitions path = Command (Choice transitions) path Bool
 
 %access private
 
-comment : String -> Bool
-comment = isPrefixOf "#"
+isComment : String -> Bool
+isComment = isPrefixOf "#"
+
+stripComments : List String -> List String
+stripComments = filter (not . isComment)
 
 parse : List String -> Maybe Transition
 parse [name, source, destination, alternative] =
@@ -66,7 +69,7 @@ readTransitions filename = pure $ map go !(readFile filename)
   where
     go : String -> (List Transition)
     go = mapMaybe (parse . words) .
-         filter (not . comment) .
+         stripComments .
          lines
 
 %access export
