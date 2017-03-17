@@ -6,7 +6,7 @@ An [Idris](http://www.idris-lang.org/) type provider for communicating type-chec
 
 ## Usage
 
-This is a verified session using the protocol described in [`vending-machine.txt`](vending-machine.txt) :
+This is a verified session using the protocol described in [`vending-machine.txt`](./example/vending-machine.txt) :
 ```idris
 -- A session type that enforces valid interactions with a vending machine.
 %provide (VendingMachineSession : (Path -> Type)) with Protocol "vending-machine.txt"
@@ -74,11 +74,11 @@ When checking an application of constructor Protocol.>>=:
                                        ("vend", "selected", "vended")]
                 and
                         ("waiting", "waiting")
-                        
+
 Unification failure
 ```
 
-See [`Example.idr`](Example.idr) for more detail.
+See [the example](./example) for more detail.
 
 ## FFI
 
@@ -94,7 +94,7 @@ Idris Type Providers depend on a foreign function interface. That's turned off b
 - [x] Support transitions that can fail.
 - [ ] Read the list of valid steps over HTTP.
 - [ ] Use error reflection to improve error reporting.
-- [ ] Package it.
+- [x] Package it.
 - [ ] Set up a sample protocol registry.
 
 ## References
