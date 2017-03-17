@@ -2,3 +2,4 @@
 *.ibc
 *.idr~
 *.o
+/result
