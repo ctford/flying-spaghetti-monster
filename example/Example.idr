@@ -21,7 +21,7 @@ riiing (S k) = do
   Action "ring"
   riiing k
 
--- An implementation of the protocol.
+||| An implementation of the protocol.
 door : Nat -> DoorSession ("locked", "end")
 door nTimes = do
 --Action  "smash"  -> Won't compile because it's not a legal action described in door.txt.
@@ -43,7 +43,7 @@ runDoor Noop = []
 -- A session type that enforces valid interactions with a vending machine.
 %provide (VendingMachineSession : (Path -> Type)) with Protocol "vending-machine.txt"
 
--- An implementation of the protocol.
+||| An implementation of the protocol.
 vendingMachine : VendingMachineSession ("waiting", "vended")
 vendingMachine = do
 --Action "hack" -> Won't compile as it's not a legal action described in vending-machine.txt.
