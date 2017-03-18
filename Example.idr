@@ -17,23 +17,20 @@ riiing (S k) = do
        True => riiing k
 
 -- An implementation of the protocol.
-partial
 door : Nat -> DoorSession ("locked", "end", "end")
-door nTimes = do
+door Z = do Action "give-up"
+door (S retries) = do
 --Action  "smash"  -> Won't compile because it's not a legal action described in door.txt.
-  success <- Action  "unlock"
+  success <- Action "unlock"
   case success of
-       True => do
-         success <- Action "open"
-         case success of
-           True => do
-             success <- Action "enter"
-             case success of
-               True => do Noop
+    False => door retries
+    True => do
+--    riiing 3
+      success <- Action "open"
+      case success of
+        False => do Action "quit"
+        True  => do Action "enter"
 --Action  "unlock" -> Won't compile because it's not a legal action *in this state*.
---  riiing nTimes
---  Action "open"
---  Action "enter"
 
 runDoor : DoorSession (a, b, c) -> List String
 runDoor (x >>= rest) = (runDoor x) ++ (runDoor $ rest True)

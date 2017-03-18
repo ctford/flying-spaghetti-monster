@@ -1,5 +1,6 @@
 #name   from    to       alternative
 unlock  locked  closed   locked
+give-up locked  end
 lock    closed  locked
 ring    closed  closed
 open    closed  opened   jammed
