@@ -15,27 +15,34 @@ where Choose : (alternative : a) ->
 Path : Type
 Path = (String, String)
 
+UPath : Type
+UPath = (String, String, String)
+
+data Route = Fork String String String | Straight String String
+
+definitely : Path -> UPath
+definitely (x, y) = (x, y, y)
+
 -- A named happy and sad path.
 Transition : Type
 Transition = (String, Path, Path)
 
 -- Use the allowed transitions to define a finite state machine type.
-data Command : Type -> Path -> (result : Type) -> Type
+data Command : Type -> UPath -> (result : Type) -> Type
 where
   Action  : (name : String) ->
             {transitions : List Transition} ->
-            {happy, sad : Path} ->
-            {auto membership : Elem (name, happy, sad) transitions} ->
-            Command (Choice transitions) happy Bool
+            {auto membership : Elem (name, (beginning, happy), (beginning, sad)) transitions} ->
+            Command (Choice transitions) (beginning, happy, sad) Bool
 
-  Noop    : Command (Choice transitions) (state, state) Bool
+  Noop    : Command (Choice transitions) (beginning, beginning, beginning) Bool
 
-  (>>=)   : Command (Choice transitions) (beginning, middle) Bool ->
-            (Bool -> Command (Choice transitions) (middle, end) Bool) ->
-            Command (Choice transitions) (beginning, end) Bool
+  (>>=)   : Command (Choice transitions) (beginning, happy, sad) Bool ->
+            ((success : Bool) -> Command (Choice transitions) (if success then happy else sad, end, alt) Bool) ->
+            Command (Choice transitions) (beginning, end, alt) Bool
 
 -- Encode a list of transitions into a session type.
-encode : List Transition -> Path -> Type
+encode : List Transition -> UPath -> Type
 encode transitions path = Command (Choice transitions) path Bool
 
 comment : String -> Bool
@@ -56,7 +63,7 @@ readTransitions filename =
      pure $ parsed
 
 -- Provide a session type derived from encoding the specified file.
-Protocol : String -> IO (Provider (Path -> Type))
+Protocol : String -> IO (Provider (UPath -> Type))
 Protocol filename =
   do result <- readTransitions filename
      pure $
