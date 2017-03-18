@@ -11,7 +11,7 @@ import Data.List
 riiing : Nat -> DoorSession ("closed", "closed", "closed")
 riiing Z = Noop
 riiing (S k) = do
-  success <- Action "ring"
+  success <- Cert "ring"
   case success of
        False => riiing k
        True => riiing k
@@ -34,6 +34,7 @@ door (S retries) = do
 
 runDoor : DoorSession (a, b, c) -> List String
 runDoor (x >>= rest) = (runDoor x) ++ (runDoor $ rest True)
+runDoor (Cert x) = [x]
 runDoor (Action x) = [x]
 runDoor Noop = []
 

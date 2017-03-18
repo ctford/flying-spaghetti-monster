@@ -35,6 +35,11 @@ where
             {auto membership : Elem (name, (beginning, happy), (beginning, sad)) transitions} ->
             Command (Choice transitions) (beginning, happy, sad) Bool
 
+  Cert    : (name : String) ->
+            {transitions : List Transition} ->
+            {auto membership : Elem (name, (beginning, happy), (beginning, happy)) transitions} ->
+            Command (Choice transitions) (beginning, happy, happy) Bool
+
   Noop    : Command (Choice transitions) (beginning, beginning, beginning) Bool
 
   (>>=)   : Command (Choice transitions) (beginning, happy, sad) Bool ->
