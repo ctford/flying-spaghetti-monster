@@ -23,27 +23,27 @@ Transition : Type
 Transition = Named (Path, Path)
 
 -- Use the allowed transitions to define a finite state machine type.
-data Command : Type -> Named Path -> (result : Type) -> Type
+data Command : Type -> Named Path -> Type
 where
   Action  : (name : String) ->
             {transitions : List Transition} ->
             {auto membership : Elem (name, (beginning, happy), (beginning, sad)) transitions} ->
-            Command (Choice transitions) (beginning, happy, sad) Bool
+            Command (Choice transitions) (beginning, happy, sad)
 
   Cert    : (name : String) ->
             {transitions : List Transition} ->
             {auto membership : Elem (name, (beginning, happy), (beginning, happy)) transitions} ->
-            Command (Choice transitions) (beginning, happy, happy) Bool
+            Command (Choice transitions) (beginning, happy, happy)
 
-  Noop    : Command (Choice transitions) (beginning, beginning, beginning) Bool
+  Noop    : Command (Choice transitions) (beginning, beginning, beginning)
 
-  (>>=)   : Command (Choice transitions) (beginning, happy, sad) Bool ->
-            ((success : Bool) -> Command (Choice transitions) (if success then happy else sad, end, alt) Bool) ->
-            Command (Choice transitions) (beginning, end, alt) Bool
+  (>>=)   : Command (Choice transitions) (beginning, happy, sad) ->
+            ((success : Bool) -> Command (Choice transitions) (if success then happy else sad, end, alt)) ->
+            Command (Choice transitions) (beginning, end, alt)
 
 -- Encode a list of transitions into a session type.
 encode : List Transition -> Named Path -> Type
-encode transitions path = Command (Choice transitions) path Bool
+encode transitions path = Command (Choice transitions) path
 
 comment : String -> Bool
 comment = isPrefixOf "#"
