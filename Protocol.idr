@@ -15,20 +15,15 @@ where Choose : (alternative : a) ->
 Path : Type
 Path = (String, String)
 
-UPath : Type
-UPath = (String, String, String)
-
-data Route = Fork String String String | Straight String String
-
-definitely : Path -> UPath
-definitely (x, y) = (x, y, y)
+Named : Type -> Type
+Named x = (String, x)
 
 -- A named happy and sad path.
 Transition : Type
-Transition = (String, Path, Path)
+Transition = Named (Path, Path)
 
 -- Use the allowed transitions to define a finite state machine type.
-data Command : Type -> UPath -> (result : Type) -> Type
+data Command : Type -> Named Path -> (result : Type) -> Type
 where
   Action  : (name : String) ->
             {transitions : List Transition} ->
@@ -47,7 +42,7 @@ where
             Command (Choice transitions) (beginning, end, alt) Bool
 
 -- Encode a list of transitions into a session type.
-encode : List Transition -> UPath -> Type
+encode : List Transition -> Named Path -> Type
 encode transitions path = Command (Choice transitions) path Bool
 
 comment : String -> Bool
@@ -68,7 +63,7 @@ readTransitions filename =
      pure $ parsed
 
 -- Provide a session type derived from encoding the specified file.
-Protocol : String -> IO (Provider (UPath -> Type))
+Protocol : String -> IO (Provider (Named Path -> Type))
 Protocol filename =
   do result <- readTransitions filename
      pure $

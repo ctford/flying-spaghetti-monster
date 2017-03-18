@@ -6,7 +6,7 @@ import Data.List
 
 
 -- A session type that enforces valid interactions with a door.
-%provide (DoorSession : (UPath -> Type)) with Protocol "door.txt"
+%provide (DoorSession : (Named Path -> Type)) with Protocol "door.txt"
 
 riiing : Nat -> DoorSession ("closed", "closed", "closed")
 riiing Z = Noop
