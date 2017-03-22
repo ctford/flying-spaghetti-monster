@@ -92,6 +92,10 @@ You can build the example:
 ```
 $ ./build
 $ ./runexample
+===> Door Example
+unlock ring ring ring open enter
+===> Vending Machine Example
+pay return pay select vend
 ```
 
 You can also run the example in a repl:
