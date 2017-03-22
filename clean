@@ -1,2 +1,3 @@
 #!/bin/sh
 idris --clean fsm.ipkg
+idris --clean example/example.ipkg
