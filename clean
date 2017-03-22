@@ -1,0 +1,2 @@
+#!/bin/sh
+idris --clean fsm.ipkg
