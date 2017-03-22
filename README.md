@@ -85,6 +85,32 @@ See [the example](./example) for more detail.
 Idris Type Providers depend on a foreign function interface. That's turned off by default in the version of Idris on Stack. To install with it enabled:
 
     stack install idris --flag idris:FFI --flag idris:extra-deps libffi-0.1
+    
+## Building
+
+You can build the example:
+```
+$ ./build
+$ ./runexample
+```
+
+You can also run the example in a repl:
+
+```
+$ ./build
+$ ./repl 
+     ____    __     _                                          
+    /  _/___/ /____(_)____                                     
+    / // __  / ___/ / ___/     Version 0.12.3
+  _/ // /_/ / /  / (__  )      http://www.idris-lang.org/      
+ /___/\__,_/_/  /_/____/       Type :? for help               
+
+Idris is free software with ABSOLUTELY NO WARRANTY.            
+For details type :warranty.
+Idris> :l Example
+*Example> runDoor $ door 3
+["unlock", "ring", "ring", "ring", "open", "enter"] : List String
+```
 
 ## Todo
 
