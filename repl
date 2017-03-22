@@ -1,0 +1,2 @@
+#!/bin/sh
+idris -i src -i example
