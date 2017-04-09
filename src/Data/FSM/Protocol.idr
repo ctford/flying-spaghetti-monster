@@ -27,18 +27,17 @@ Transition : Type
 Transition = (String, Path, Path)
 
 ||| Use the allowed transitions to define a finite state machine type.
-data Command : Type -> Path -> (result : Type) -> Type where
+data Command : Bool -> Type -> Path -> Type where
      Action  : (name : String) ->
                {transitions : List Transition} ->
-               {happy, sad : Path} ->
-               {auto membership : Elem (name, happy, sad) transitions} ->
-               Command (Choice transitions) happy Bool
+               {auto membership : Elem (name, (beginning, happy), (beginning, sad)) transitions} ->
+               Command True (Choice transitions) (beginning, happy)
 
-     Noop    : Command (Choice transitions) (state, state) Bool
+     Noop    : Command True (Choice transitions) (state, state)
 
-     (>>=)   : Command (Choice transitions) (beginning, middle) Bool ->
-               (Bool -> Command (Choice transitions) (middle, end) Bool) ->
-               Command (Choice transitions) (beginning, end) Bool
+     (>>=)   : Command True (Choice transitions) (beginning, middle) ->
+               (Bool -> Command True (Choice transitions) (middle, end)) ->
+               Command True (Choice transitions) (beginning, end)
 
 ---------------------------
 -- Parsing Transition Files
@@ -46,7 +45,7 @@ data Command : Type -> Path -> (result : Type) -> Type where
 
 ||| Encode a list of transitions into a session type.
 encode : List Transition -> Path -> Type
-encode transitions path = Command (Choice transitions) path Bool
+encode transitions path = Command True (Choice transitions) path
 
 %access private
 
