@@ -16,7 +16,7 @@
 Define a session type that enforces valid interactions with a door.
 
 > %provide (DoorSession : (Path -> Type)) with
->          Protocol "door.txt"
+>          Protocol "example/door.txt"
 
 > ||| Ring the doorbell.
 > ||| @ n the number of times to ring
@@ -51,7 +51,7 @@ because it's not a legal action *in this state*.
 Define a session type that enforces valid interactions with a vending machine.
 
 > %provide (VendingMachineSession : (Path -> Type)) with
->          Protocol "vending-machine.txt"
+>          Protocol "example/vending-machine.txt"
 
 > ||| An implementation of the protocol.
 > vendingMachine : VendingMachineSession ("waiting", "vended")
