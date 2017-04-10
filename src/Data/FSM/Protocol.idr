@@ -22,30 +22,39 @@ data Choice : List a -> Type where
 Path : Type
 Path = (String, String)
 
+Named : Type -> Type
+Named x = (String, x)
+
 ||| A named happy and sad path.
 Transition : Type
-Transition = (String, Path, Path)
+Transition = Named (Path, Path)
 
 ||| Use the allowed transitions to define a finite state machine type.
-data Command : Bool -> Type -> Path -> Type where
-     Action  : (name : String) ->
-               {transitions : List Transition} ->
-               {auto membership : Elem (name, (beginning, happy), (beginning, sad)) transitions} ->
-               Command True (Choice transitions) (beginning, happy)
+data Command : Type -> Named Path -> Type
+where
+  Action  : (name : String) ->
+            {transitions : List Transition} ->
+            {auto membership : Elem (name, (beginning, happy), (beginning, sad)) transitions} ->
+            Command (Choice transitions) (beginning, happy, sad)
 
-     Noop    : Command True (Choice transitions) (state, state)
+  Cert    : (name : String) ->
+            {transitions : List Transition} ->
+            {auto membership : Elem (name, (beginning, happy), (beginning, happy)) transitions} ->
+            Command (Choice transitions) (beginning, happy, happy)
 
-     (>>=)   : Command True (Choice transitions) (beginning, middle) ->
-               (Bool -> Command True (Choice transitions) (middle, end)) ->
-               Command True (Choice transitions) (beginning, end)
+  Noop    : Command (Choice transitions) (beginning, beginning, beginning)
 
----------------------------
--- Parsing Transition Files
----------------------------
+  (>>=)   : Command (Choice transitions) (beginning, happy, sad) ->
+            ((success : Bool) -> Command (Choice transitions) (if success then happy else sad, end, alt)) ->
+            Command (Choice transitions) (beginning, end, alt)
+
+----------------------------
+--- Parsing Transition Files
+----------------------------
 
 ||| Encode a list of transitions into a session type.
-encode : List Transition -> Path -> Type
-encode transitions path = Command True (Choice transitions) path
+encode : List Transition -> Named Path -> Type
+encode transitions path = Command (Choice transitions) path
 
 %access private
 
@@ -74,9 +83,10 @@ readTransitions filename = pure $ map go !(readFile filename)
 %access export
 
 ||| Provide a session type derived from encoding the specified file.
-Protocol : String -> IO (Provider (Path -> Type))
+Protocol : String -> IO (Provider (Named Path -> Type))
 Protocol filename =
-    pure $
-    case !(readTransitions filename) of
-      Right transitions => Provide $ encode transitions
-      Left _ => Error $ "Unable to read transitions file: " ++ filename
+  do result <- readTransitions filename
+     pure $
+       case result of
+         Left error => Error $ "Unable to read transitions file: " ++ filename
+         Right transitions => Provide $ encode transitions

@@ -5,4 +5,5 @@ ring    closed  closed
 open    closed  opened   jammed
 close   opened  closed   jammed
 quit    jammed  end
+give-up locked  end
 enter   opened  end

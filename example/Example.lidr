@@ -15,36 +15,45 @@
 
 Define a session type that enforces valid interactions with a door.
 
-> %provide (DoorSession : (Path -> Type)) with
+> %provide (DoorSession : (Named Path -> Type)) with
 >          Protocol "example/door.txt"
 
 > ||| Ring the doorbell.
 > ||| @ n the number of times to ring
-> riiing : (n : Nat) -> DoorSession ("closed", "closed")
+> riiing : (n : Nat) -> DoorSession ("closed", "closed", "closed")
 > riiing Z     = Noop
-> riiing (S k) = do Action "ring"
->                   riiing k
+> riiing (S k) = do success <- Action "ring"
+>                   case success of
+>                     False => riiing k
+>                     True =>  riiing k
+
 
 > ||| An implementation of the protocol.
-> door : Nat -> DoorSession ("locked", "end")
-> door nTimes =
+> door : Nat -> DoorSession ("locked", "end", "end")
+> door Z = do Action "give-up"
+> door (S retries) = do
 
 `Action "smash"` won't compile,
 because it's not a legal action described in [`door.txt`][door spec].
 
->     do Action  "unlock"
+>  success <- Action "unlock"
+>  case success of
+>    False => door retries
+>    True => do
+>      success <- Action "open"
+>      case success of
+>        False => do Action "quit"
+>        True  => do Action "enter"
 
 `Action "unlock"` won't compile,
 because it's not a legal action *in this state*.
 
->        riiing nTimes
->        Action "open"
->        Action "enter"
-
-> runDoor : DoorSession (a, b) -> List String
+> runDoor : DoorSession (a, b, c) -> List String
 > runDoor (x >>= rest) = (runDoor x) ++ (runDoor $ rest True)
 > runDoor (Action x)   = [x]
+> runDoor (Cert x)   = [x]
 > runDoor Noop         = []
+>{-
 
 == Vending Machine Example
 
@@ -106,3 +115,5 @@ because it's not a legal action *in this state*
 
 [door spec]: ./door.txt
 [vm spec]: ./vending-machine.txt
+
+>-}
