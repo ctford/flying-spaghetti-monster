@@ -27,7 +27,6 @@ Define a session type that enforces valid interactions with a door.
 >                     False => riiing k
 >                     True =>  riiing k
 
-
 > ||| An implementation of the protocol.
 > door : Nat -> DoorSession ("locked", "end", "end")
 > door Z = do Action "give-up"
@@ -51,7 +50,7 @@ because it's not a legal action *in this state*.
 > runDoor : DoorSession (a, b, c) -> List String
 > runDoor (x >>= rest) = (runDoor x) ++ (runDoor $ rest True)
 > runDoor (Action x)   = [x]
-> runDoor (Cert x)   = [x]
+> runDoor (Cert x)     = [x]
 > runDoor Noop         = []
 >{-
 
@@ -87,6 +86,7 @@ because it's not a legal action *in this state*
 
 == Main Executable
 
+>-}
 > namespace Main
 >
 >   private runExample : (name : String) -> (results : List String) -> IO ()
@@ -96,10 +96,12 @@ because it's not a legal action *in this state*
 >
 >   %access export
 >
+>
 >   doorExample : IO ()
 >   doorExample =
 >       runExample "Door" $
 >       runDoor (door 3)
+>{-
 >
 >   vendingMachineExample : IO ()
 >   vendingMachineExample =
