@@ -29,32 +29,35 @@ Named x = (String, x)
 Transition : Type
 Transition = Named (Path, Path)
 
+State : Type
+State = String
+
 ||| Use the allowed transitions to define a finite state machine type.
-data Command : Type -> Named Path -> Type
+data Command : (ty : Type) -> Type -> State -> (ty -> State) -> Type
 where
   Action  : (name : String) ->
             {transitions : List Transition} ->
             {auto membership : Elem (name, (beginning, happy), (beginning, sad)) transitions} ->
-            Command (Choice transitions) (beginning, happy, sad)
+            Command Bool (Choice transitions) beginning (\success => if success then happy else sad)
 
   Cert    : (name : String) ->
             {transitions : List Transition} ->
             {auto membership : Elem (name, (beginning, happy), (beginning, happy)) transitions} ->
-            Command (Choice transitions) (beginning, happy, happy)
+            Command () (Choice transitions) beginning (const happy)
 
-  Noop    : Command (Choice transitions) (beginning, beginning, beginning)
+  Noop    : Command () (Choice transitions) beginning (const beginning)
 
-  (>>=)   : Command (Choice transitions) (beginning, happy, sad) ->
-            ((success : Bool) -> Command (Choice transitions) (if success then happy else sad, end, alt)) ->
-            Command (Choice transitions) (beginning, end, alt)
+  (>>=)   : Command a (Choice transitions) beginning next ->
+            ((result : a) -> Command b (Choice transitions) (next result) finally) ->
+            Command b (Choice transitions) beginning finally
 
 ----------------------------
 --- Parsing Transition Files
 ----------------------------
 
 ||| Encode a list of transitions into a session type.
-encode : List Transition -> Named Path -> Type
-encode transitions path = Command (Choice transitions) path
+encode : List Transition -> Type -> Path -> Type
+encode transitions resulty (beginning, end) = Command resulty (Choice transitions) beginning (const end)
 
 %access private
 
@@ -83,7 +86,7 @@ readTransitions filename = pure $ map go !(readFile filename)
 %access export
 
 ||| Provide a session type derived from encoding the specified file.
-Protocol : String -> IO (Provider (Named Path -> Type))
+Protocol : String -> IO (Provider (Type -> Path -> Type))
 Protocol filename =
   do result <- readTransitions filename
      pure $
