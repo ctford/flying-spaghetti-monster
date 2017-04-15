@@ -22,27 +22,20 @@ Define a session type that enforces valid interactions with a door.
 > ||| @ n the number of times to ring
 > riiing : (n : Nat) -> DoorSession ("closed", "closed", "closed")
 > riiing Z     = Noop
-> riiing (S k) = do success <- Action "ring"
->                   case success of
->                     False => riiing k
->                     True =>  riiing k
+> riiing (S k) = do True <- Action "ring" | False => riiing k
+>                   riiing k
 
 > ||| An implementation of the protocol.
 > door : Nat -> DoorSession ("locked", "end", "end")
-> door Z = do Action "give-up"
+> door Z = Action "give-up"
 > door (S retries) = do
 
 `Action "smash"` won't compile,
 because it's not a legal action described in [`door.txt`][door spec].
 
->  success <- Action "unlock"
->  case success of
->    False => door retries
->    True => do
->      success <- Action "open"
->      case success of
->        False => do Action "quit"
->        True  => do Action "enter"
+>  True <- Action "unlock" | False => door retries
+>  True <- Action "open"   | False => Action "quit"
+>  Action "enter"
 
 `Action "unlock"` won't compile,
 because it's not a legal action *in this state*.
