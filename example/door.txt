@@ -1,9 +1,4 @@
 #name   from    to       alternative
-unlock  locked  closed   locked
-lock    closed  locked
 ring    closed  closed
-open    closed  opened   jammed
-close   opened  closed   jammed
-give-up jammed  end
-give-up locked  end
-enter   opened  end
+open    closed  opened   closed
+close   opened  closed
