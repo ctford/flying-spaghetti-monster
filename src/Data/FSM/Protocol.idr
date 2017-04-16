@@ -22,48 +22,48 @@ data Choice : List a -> Type where
 State : Type
 State = String
 
-||| A path between a source and a destination state.
+||| A source and a destination State.
 Path : Type
 Path = (State, State)
 
-||| A named happy and sad path.
+||| A named happy and sad Path.
 Transition : Type
-Transition = (String , (Path, Path))
+Transition = (String, (Path, Path))
 
-||| A Transition can be either Successful or Unsuccessful.
-data Success = Successful | Unsuccessful
+||| A Transition can be either Success or Failure.
+data Result = Success | Failure
 
-||| A Fork is Path where the destination state is dependent on Success.
-Fork : Type
-Fork = (State, (Success -> State))
+||| A Route is Path where the destination state is dependent on Success.
+Route : Type
+Route = (State, (Result -> State))
 
 ||| Use the allowed transitions to define a finite state machine type.
-data Command : Type -> Fork -> Type
+data Command : Type -> Route -> Type
 where
-  Action  : (name : String) ->
-            {transitions : List Transition} ->
-            {auto membership : Elem (name, (beginning, happy), (beginning, sad)) transitions} ->
-            Command (Choice transitions) (beginning, \success => case success of
-                                                                   Successful => happy
-                                                                   Unsuccessful => sad)
+  Try   : (name : String) ->
+          {transitions : List Transition} ->
+          {auto membership : Elem (name, (beginning, happy), (beginning, sad)) transitions} ->
+          Command (Choice transitions) (beginning, \result => case result of
+                                                                Success => happy
+                                                                Failure => sad)
 
-  Cert    : (name : String) ->
-            {transitions : List Transition} ->
-            {auto membership : Elem (name, (beginning, happy), (beginning, happy)) transitions} ->
-            Command (Choice transitions) (beginning, const happy)
+  Do    : (name : String) ->
+          {transitions : List Transition} ->
+          {auto membership : Elem (name, (beginning, happy), (beginning, happy)) transitions} ->
+          Command (Choice transitions) (beginning, const happy)
 
-  Noop    : Command (Choice transitions) (beginning, const beginning)
+  Noop  : Command (Choice transitions) (beginning, const beginning)
 
-  (>>=)   : Command (Choice transitions) (beginning, continue) ->
-            ((result : Success) -> Command (Choice transitions) (continue result, finally)) ->
-            Command (Choice transitions) (beginning, finally)
+  (>>=) : Command (Choice transitions) (beginning, continue) ->
+          ((result : Result) -> Command (Choice transitions) (continue result, finally)) ->
+          Command (Choice transitions) (beginning, finally)
 
 ----------------------------
 --- Parsing Transition Files
 ----------------------------
 
-||| Encode a list of transitions into a session type.
-encode : List Transition -> Fork -> Type
+||| Encode a List of Transitions into a session type.
+encode : List Transition -> Route -> Type
 encode transitions = Command (Choice transitions)
 
 %access private
@@ -93,7 +93,7 @@ readTransitions filename = pure $ map go !(readFile filename)
 %access export
 
 ||| Provide a session type derived from encoding the specified file.
-Protocol : String -> IO (Provider (Fork -> Type))
+Protocol : String -> IO (Provider (Route -> Type))
 Protocol filename =
   do result <- readTransitions filename
      pure $

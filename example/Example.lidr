@@ -15,35 +15,35 @@
 
 Define a session type that enforces valid interactions with a door.
 
-> %provide (DoorSession : (Fork -> Type)) with Protocol "example/door.txt"
+> %provide (DoorSession : (Route -> Type)) with Protocol "example/door.txt"
 
 > ||| Ring the doorbell.
 > ||| @ n the number of times to ring
 > Ring : (n : Nat) -> DoorSession ("closed", const "closed")
 > Ring Z     = Noop
 > Ring (S remaining) = do
->   Cert "ring"
+>   Do "ring"
 >   Ring remaining
 
 > ||| An implementation of the protocol.
 > door : Nat -> DoorSession ("locked", const "end")
-> door Z = Cert "give-up"
+> door Z = Do "give-up"
 > door (S retries) = do
 
-`Action "smash"` wouldn't compile, because it's not a legal action described in [`door.txt`][door spec].
+`Try "smash"` wouldn't compile, because it's not a legal action described in [`door.txt`][door spec].
 
->  Successful <- Action "unlock" | Unsuccessful => door retries
+>  Success <- Try "unlock" | Failure => door retries
 >  Ring 3
->  Successful <- Action "open"   | Unsuccessful => Cert "quit"
->  Cert "enter"
+>  Success <- Try "open"   | Failure => Do "quit"
+>  Do "enter"
 
-`Action "unlock"` wouldn't compile, because it's not a legal action *in this state*.
+`Try "unlock"` wouldn't compile, because it's not a legal action *in this state*.
 
 > runDoor : DoorSession _ -> List String
 > runDoor Noop = []
-> runDoor (Cert x) = [x]
-> runDoor (Action x) = [x]
-> runDoor (x >>= continue) = (runDoor x) ++ (runDoor $ continue Successful)
+> runDoor (Do x) = [x]
+> runDoor (Try x) = [x]
+> runDoor (x >>= continue) = (runDoor x) ++ (runDoor $ continue Success)
 >{-
 
 == Vending Machine Example
@@ -57,23 +57,23 @@ Define a session type that enforces valid interactions with a vending machine.
 > vendingMachine : VendingMachineSession ("waiting", "vended")
 > vendingMachine =
 
-`Action "hack"` won't compile,
+`Try "hack"` won't compile,
 because it's not a legal action described in [`vending-machine.txt`][vm spec].
 
->   do Action "pay"
->      Action "return"
+>   do Try "pay"
+>      Try "return"
 
-`Action "vend"` won't compile,
+`Try "vend"` won't compile,
 because it's not a legal action *in this state*
 
->      Action "pay"
->      Action "select"
->      Action "vend"
+>      Try "pay"
+>      Try "select"
+>      Try "vend"
 
 > runVendingMachine : VendingMachineSession (a, b) -> List String
 > runVendingMachine (x >>= rest) =
 >     runVendingMachine x ++ runVendingMachine (rest True)
-> runVendingMachine (Action x)   = [x]
+> runVendingMachine (Try x)   = [x]
 > runVendingMachine Noop         = []
 
 == Main Executable
