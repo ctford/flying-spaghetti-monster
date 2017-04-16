@@ -34,7 +34,7 @@ Define a session type that enforces valid interactions with a door.
 
 >  Success <- Try "unlock" | Failure => Door retries
 >  Ring 3
->  Success <- Try "open"   | Failure => Do "quit"
+>  Success <- Try "open"   | Failure => Do "give-up"
 >  Do "enter"
 > Door Z = do
 >  Do "give-up"
