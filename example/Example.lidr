@@ -75,7 +75,8 @@ Define a session type that enforces valid interactions with a vending machine.
 
 `Try "vend"` wouldn't compile, because it's not a legal action *in this state*
 
->   Success <- Try "select" | Failure => Do "return"
+>   Success <- Try "select" | Failure => do Do "return"
+>                                           Fail
 >   Do "vend"
 
 > ||| Interpret a VendingMachineSession, requesting input from the user on Try.
@@ -102,13 +103,20 @@ Define a session type that enforces valid interactions with a vending machine.
 >
 >   %access export
 >
+>   example : String -> IO Result -> IO ()
+>   example eg session = do
+>     putStrLn ("Running the " ++ eg ++ " example... press 'y' to make an action succeed.")
+>     success <- session
+>     case success of
+>       Success => putStrLn "Success... :-)"
+>       Failure => putStrLn "Failure... :-("
+>
 >   main : IO ()
 >   main = do
->     putStrLn "Running the Door example... press 'y' to make an action succeed."
->     success <- runDoor $ Door 3
->     case success of
->       Success => putStrLn "Entering..."
->       Failure => putStrLn "Giving up..."
+>     example "Door" $ runDoor $ Door 3
+>     putStrLn ""
+>     example "Vending Machine" $ runVendingMachine vendingMachine
+>     putStrLn "Finished!"
 
  <!-- Named Links -->
 
