@@ -23,12 +23,11 @@ Define a session type that enforces valid interactions with a door.
 > Ring (S remaining) = do
 >   Do "ring"
 >   Ring remaining
-> Ring Z =
+> Ring Z = do
 >   NoOp
 
 > ||| An implementation of the protocol.
 > Door : Nat -> DoorSession ("locked", const "end")
-> Door Z = Do "give-up"
 > Door (S retries) = do
 
 `Try "smash"` wouldn't compile, because it's not a legal action described in [`door.txt`][door spec].
@@ -37,13 +36,16 @@ Define a session type that enforces valid interactions with a door.
 >  Ring 3
 >  Success <- Try "open"   | Failure => Do "quit"
 >  Do "enter"
+> Door Z = do
+>  Do "give-up"
 
 `Try "unlock"` wouldn't compile, because it's not a legal action *in this state*.
 
+> ||| Interpret a DoorSession, assuming happy path.
 > runDoor : DoorSession _ -> List String
-> runDoor NoOp = []
-> runDoor (Do x) = [x]
-> runDoor (Try x) = [x]
+> runDoor NoOp             = []
+> runDoor (Do x)           = [x]
+> runDoor (Try x)          = [x]
 > runDoor (x >>= continue) = (runDoor x) ++ (runDoor $ continue Success)
 >{-
 
