@@ -65,18 +65,17 @@ Define a session type that enforces valid interactions with a vending machine.
 > %provide (VendingMachineSession : (Route -> Type)) with Protocol "vending-machine.txt"
 
 > ||| An implementation of the protocol.
-> vendingMachine : VendingMachineSession ("waiting", const "vended")
+> vendingMachine : VendingMachineSession ("waiting", const "waiting")
 > vendingMachine = do
 
 `Try "hack"` wouldn't compile, because it's not a legal action described in [`vending-machine.txt`][vm spec].
 
->   Do "pay"
->   Do "return"
+>   Do "insert-coin"
+>   Do "insert-coin"
 
 `Try "vend"` wouldn't compile, because it's not a legal action *in this state*
 
->   Do "pay"
->   Do "select"
+>   Success <- Try "select" | Failure => Do "return"
 >   Do "vend"
 
 > ||| Interpret a VendingMachineSession, requesting input from the user on Try.

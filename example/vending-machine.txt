@@ -1,5 +1,6 @@
-#name   from      to
-pay     waiting   paid
-return  paid      waiting
-select  paid      selected
-vend    selected  vended
+#name       from      to       alternate
+insert-coin waiting   paid
+insert-coin paid      paid
+return      paid      waiting
+select      paid      selected paid
+vend        selected  waiting
