@@ -15,10 +15,10 @@ vendingMachine : VendingMachineSession ("waiting", const "waiting")
 vendingMachine = do
   --`Do "hack"` wouldn't compile, because it's not a legal action described in vending-machine.txt.
   Do "insert-coin"
+  --`Do "vend"` wouldn't compile, because it's not a legal action *in this state*.
   Do "insert-coin"
-  --`Do "vend"` wouldn't compile, because it's not a legal action *in this state*
-  Success <- Try "select" | Failure => do Do "return"
-                                          Fail
+  -- Some actions can fail, in which case the compiler checks all the paths end in the right state.
+  Success <- Try "select" | Failure => do Do "return"; Fail
   Do "vend"
 ```
 
