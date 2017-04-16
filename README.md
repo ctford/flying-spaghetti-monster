@@ -8,19 +8,18 @@ An [Idris](http://www.idris-lang.org/) type provider for communicating type-chec
 
 This is a verified session using the protocol described in [`vending-machine.txt`](./example/vending-machine.txt) :
 ```idris
--- A session type that enforces valid interactions with a vending machine.
-%provide (VendingMachineSession : (Path -> Type)) with Protocol "vending-machine.txt"
+%provide (VendingMachineSession : (Route -> Type)) with Protocol "vending-machine.txt"
 
 -- An implementation of the protocol.
-vendingMachine : VendingMachineSession ("waiting", "vended")
+vendingMachine : VendingMachineSession ("waiting", const "waiting")
 vendingMachine = do
---Action "hack" -> Won't compile as it's not a legal action described in vending-machine.txt.
-  Action "pay"
-  Action "return"
---Action "vend" -> Won't compile as it's not a legal action *in this state*.
-  Action "pay"
-  Action "select"
-  Action "vend"
+  --`Do "hack"` wouldn't compile, because it's not a legal action described in [`vending-machine.txt`][vm spec].
+  Do "insert-coin"
+  Do "insert-coin"
+  --`Do "vend"` wouldn't compile, because it's not a legal action *in this state*
+  Success <- Try "select" | Failure => do Do "return"
+                                          Fail
+  Do "vend"
 ```
 
 If you try and use the illegal action `"hack"`, you'll get the following *compilation* error:
@@ -92,28 +91,6 @@ You can build the example:
 ```
 $ ./build
 $ ./runexample
-===> Door Example
-unlock ring ring ring open enter
-===> Vending Machine Example
-pay return pay select vend
-```
-
-You can also run the example in a repl:
-
-```
-$ ./build
-$ ./repl 
-     ____    __     _                                          
-    /  _/___/ /____(_)____                                     
-    / // __  / ___/ / ___/     Version 0.12.3
-  _/ // /_/ / /  / (__  )      http://www.idris-lang.org/      
- /___/\__,_/_/  /_/____/       Type :? for help               
-
-Idris is free software with ABSOLUTELY NO WARRANTY.            
-For details type :warranty.
-Idris> :l Example
-*Example> runDoor $ door 3
-["unlock", "ring", "ring", "ring", "open", "enter"] : List String
 ```
 
 ## Todo
