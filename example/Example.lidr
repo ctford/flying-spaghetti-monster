@@ -41,19 +41,21 @@ Define a session type that enforces valid interactions with a door.
 `Try "close"` wouldn't compile, because it's not a legal action *in this state*.
 
 > ||| Interpret a DoorSession, requesting input from the user on Try.
+> queryUser : IO Result
+> queryUser = do
+>   line <- getLine
+>   let result = if line == "y" then Success else Failure
+>   pure result
+>
 > runDoor : DoorSession _ -> IO Result
-> runDoor Succeed          = do
->   pure Success
-> runDoor Fail             = do
->   pure Failure
+> runDoor Succeed          = pure Success
+> runDoor Fail             = pure Failure
 > runDoor (Do x)           = do
 >   putStrLn $ x ++ "!"
 >   pure Success
 > runDoor (Try x)          = do
 >   putStrLn $ x ++ "?"
->   line <- getLine
->   let result = if line == "y" then Success else Failure
->   pure result
+>   queryUser
 > runDoor (x >>= continue) = do
 >   result <- runDoor x
 >   runDoor $ continue result
@@ -75,24 +77,19 @@ Define a session type that enforces valid interactions with a vending machine.
 
 `Try "vend"` wouldn't compile, because it's not a legal action *in this state*
 
->   Success <- Try "select" | Failure => do Do "return"
->                                           Fail
+>   Success <- Try "select" | Failure => do Do "return"; Fail
 >   Do "vend"
 
 > ||| Interpret a VendingMachineSession, requesting input from the user on Try.
 > runVendingMachine : VendingMachineSession _ -> IO Result
-> runVendingMachine Succeed          = do
->   pure Success
-> runVendingMachine Fail             = do
->   pure Failure
+> runVendingMachine Succeed          = pure Success
+> runVendingMachine Fail             = pure Failure
 > runVendingMachine (Do x)           = do
 >   putStrLn $ x ++ "!"
 >   pure Success
 > runVendingMachine (Try x)          = do
 >   putStrLn $ x ++ "?"
->   line <- getLine
->   let result = if line == "y" then Success else Failure
->   pure result
+>   queryUser
 > runVendingMachine (x >>= continue) = do
 >   result <- runVendingMachine x
 >   runVendingMachine $ continue result
