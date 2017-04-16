@@ -40,23 +40,25 @@ Route = (State, (Result -> State))
 ||| Use the allowed transitions to define a finite state machine type.
 data Command : Type -> Route -> Type
 where
-  Try   : (name : String) ->
-          {transitions : List Transition} ->
-          {auto membership : Elem (name, (beginning, happy), (beginning, sad)) transitions} ->
-          Command (Choice transitions) (beginning, \result => case result of
-                                                                Success => happy
-                                                                Failure => sad)
+  Try      : (name : String) ->
+             {transitions : List Transition} ->
+             {auto membership : Elem (name, (beginning, happy), (beginning, sad)) transitions} ->
+             Command (Choice transitions) (beginning, \result => case result of
+                                                                   Success => happy
+                                                                   Failure => sad)
 
-  Do    : (name : String) ->
-          {transitions : List Transition} ->
-          {auto membership : Elem (name, (beginning, happy), (beginning, happy)) transitions} ->
-          Command (Choice transitions) (beginning, const happy)
+  Do       : (name : String) ->
+             {transitions : List Transition} ->
+             {auto membership : Elem (name, (beginning, happy), (beginning, happy)) transitions} ->
+             Command (Choice transitions) (beginning, const happy)
 
-  NoOp  : Command (Choice transitions) (beginning, const beginning)
+  Succeed  : Command (Choice transitions) (beginning, const beginning)
 
-  (>>=) : Command (Choice transitions) (beginning, continue) ->
-          ((result : Result) -> Command (Choice transitions) (continue result, finally)) ->
-          Command (Choice transitions) (beginning, finally)
+  Fail     : Command (Choice transitions) (beginning, const beginning)
+
+  (>>=)    : Command (Choice transitions) (beginning, continue) ->
+             ((result : Result) -> Command (Choice transitions) (continue result, finally)) ->
+             Command (Choice transitions) (beginning, finally)
 
 ----------------------------
 --- Parsing Transition Files

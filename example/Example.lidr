@@ -24,7 +24,7 @@ Define a session type that enforces valid interactions with a door.
 >   Do "ring"
 >   Ring remaining
 > Ring Z = do
->   NoOp
+>   Succeed
 
 > ||| An implementation of the protocol.
 > Door : Nat -> DoorSession ("closed", const "closed")
@@ -32,18 +32,20 @@ Define a session type that enforces valid interactions with a door.
 
 `Try "smash"` wouldn't compile, because it's not a legal action described in [`door.txt`][door spec].
 
->   Ring retries
+>   Ring 3
 >   Success <- Try "open" | Failure => Door retries
 >   Do "close"
 > Door Z = do
->   NoOp
+>   Fail
 
 `Try "close"` wouldn't compile, because it's not a legal action *in this state*.
 
 > ||| Interpret a DoorSession, requesting input from the user on Try.
 > runDoor : DoorSession _ -> IO Result
-> runDoor NoOp             = do
+> runDoor Succeed          = do
 >   pure Success
+> runDoor Fail             = do
+>   pure Failure
 > runDoor (Do x)           = do
 >   putStrLn $ x ++ "!"
 >   pure Success
@@ -79,7 +81,8 @@ Define a session type that enforces valid interactions with a vending machine.
 
 > ||| Interpret a VendingMachineSession, assuming happy path.
 > runVendingMachine : VendingMachineSession _ -> List String
-> runVendingMachine NoOp             = []
+> runVendingMachine Succeed          = []
+> runVendingMachine Fail             = []
 > runVendingMachine (Do x)           = [x]
 > runVendingMachine (Try x)          = [x]
 > runVendingMachine (x >>= continue) = (runVendingMachine x) ++ (runVendingMachine $ continue Success)
@@ -95,8 +98,8 @@ Define a session type that enforces valid interactions with a vending machine.
 >     putStrLn "Running the Door example... press 'y' to make an action succeed."
 >     success <- runDoor $ Door 3
 >     case success of
->       Success => putStrLn "Exiting successfully."
->       Failure => putStrLn "Exiting unsuccessfully."
+>       Success => putStrLn "Entering..."
+>       Failure => putStrLn "Giving up..."
 
  <!-- Named Links -->
 
