@@ -1,2 +1,2 @@
 #!/bin/sh
-idris -i src -i example
+(cd example; idris -i ../src)

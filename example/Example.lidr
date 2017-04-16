@@ -15,7 +15,7 @@
 
 Define a session type that enforces valid interactions with a door.
 
-> %provide (DoorSession : (Route -> Type)) with Protocol "example/door.txt"
+> %provide (DoorSession : (Route -> Type)) with Protocol "door.txt"
 
 > ||| Ring the doorbell.
 > ||| @ n the number of times to ring
@@ -52,7 +52,7 @@ Define a session type that enforces valid interactions with a door.
 
 Define a session type that enforces valid interactions with a vending machine.
 
-> %provide (VendingMachineSession : (Route -> Type)) with Protocol "example/vending-machine.txt"
+> %provide (VendingMachineSession : (Route -> Type)) with Protocol "vending-machine.txt"
 
 > ||| An implementation of the protocol.
 > vendingMachine : VendingMachineSession ("waiting", const "vended")
