@@ -60,8 +60,8 @@ where
 ----------------------------
 
 ||| Encode a list of transitions into a session type.
-encode : List Transition -> Path -> Type
-encode transitions (beginning, end) = Command (Choice transitions) beginning (const end)
+encode : List Transition -> State -> (Success -> State) -> Type
+encode transitions beginning ending = Command (Choice transitions) beginning ending
 
 %access private
 
@@ -90,7 +90,7 @@ readTransitions filename = pure $ map go !(readFile filename)
 %access export
 
 ||| Provide a session type derived from encoding the specified file.
-Protocol : String -> IO (Provider (Path -> Type))
+Protocol : String -> IO (Provider (State -> (Success -> State) -> Type))
 Protocol filename =
   do result <- readTransitions filename
      pure $

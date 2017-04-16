@@ -15,18 +15,18 @@
 
 Define a session type that enforces valid interactions with a door.
 
-> %provide (DoorSession : (Path -> Type)) with Protocol "example/door.txt"
+> %provide (DoorSession : (State -> (Success -> State) -> Type)) with Protocol "example/door.txt"
 
 > ||| Ring the doorbell.
 > ||| @ n the number of times to ring
-> Ring : (n : Nat) -> DoorSession ("closed", "closed")
+> Ring : (n : Nat) -> DoorSession "closed" (const "closed")
 > Ring Z     = Noop
 > Ring (S remaining) = do
 >   Cert "ring"
 >   Ring remaining
 
 > ||| An implementation of the protocol.
-> door : Nat -> DoorSession ("locked", "end")
+> door : Nat -> DoorSession "locked" (const "end")
 > door Z = Cert "give-up"
 > door (S retries) = do
 
@@ -39,12 +39,11 @@ Define a session type that enforces valid interactions with a door.
 
 `Action "unlock"` wouldn't compile, because it's not a legal action *in this state*.
 
-> runDoor : DoorSession (a, b) -> List String
+> runDoor : DoorSession a b -> List String
+> runDoor Noop = []
 > runDoor (Cert x) = [x]
-> runDoor Noop = ["nop"]
-> runDoor ((Action x) >>= continue) = [x] ++ (runDoor $ continue Successful)
-> runDoor ((Cert x) >>= continue) = [x] ++ (runDoor $ continue Successful)
-> runDoor (other >>= continue) = (runDoor $ continue Successful)
+> runDoor (Action x) = [x]
+> runDoor (x >>= continue) = (runDoor x) ++ (runDoor $ continue Successful)
 >{-
 
 == Vending Machine Example
