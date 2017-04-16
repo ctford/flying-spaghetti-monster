@@ -6,14 +6,14 @@ An [Idris](http://www.idris-lang.org/) type provider for communicating type-chec
 
 ## Usage
 
-This is a verified session using the protocol described in [`vending-machine.txt`](./example/vending-machine.txt) :
+This is a verified session using the protocol described in vending-machine.txt:
 ```idris
 %provide (VendingMachineSession : (Route -> Type)) with Protocol "vending-machine.txt"
 
 -- An implementation of the protocol.
 vendingMachine : VendingMachineSession ("waiting", const "waiting")
 vendingMachine = do
-  --`Do "hack"` wouldn't compile, because it's not a legal action described in [`vending-machine.txt`][vm spec].
+  --`Do "hack"` wouldn't compile, because it's not a legal action described in `vending-machine.txt.
   Do "insert-coin"
   Do "insert-coin"
   --`Do "vend"` wouldn't compile, because it's not a legal action *in this state*
