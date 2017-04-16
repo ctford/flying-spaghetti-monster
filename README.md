@@ -30,7 +30,7 @@ Example.idr:27:10:When checking right hand side of vendingMachine with expected 
 
 When checking argument membership to constructor Protocol.Action:
         Can't find a value of type
-                Elem "hack" ["pay", "return", "select", "vend"]
+                Elem "hack" ["insert-coin", "return", "select", "vend"]
 ```
 
 The Idris compiler reads the description of the protocol and then type checks it. Even though the actions are specified by strings, Idris is able to verify that they're within the set of actions specified.
@@ -46,19 +46,19 @@ Example.idr:31:3:When checking right hand side of vendingMachine with expected t
 When checking an application of constructor Protocol.>>=:
         Type mismatch between
                 Command ()
-                        (Choice [("pay", "waiting", "paid"),
+                        (Choice [("insert-coin", "waiting", "paid"),
                                  ("return", "paid", "waiting"),
                                  ("select", "paid", "selected"),
                                  ("vend", "selected", "vended")])
                         (locate "vend"
-                                [("pay", "waiting", "paid"),
+                                [("insert-coin", "waiting", "paid"),
                                  ("return", "paid", "waiting"),
                                  ("select", "paid", "selected"),
                                  ("vend", "selected", "vended")])
                 (Type of Action "vend")
         and
                 Command ()
-                        (Choice [("pay", "waiting", "paid"),
+                        (Choice [("insert-coin", "waiting", "paid"),
                                  ("return", "paid", "waiting"),
                                  ("select", "paid", "selected"),
                                  ("vend", "selected", "vended")])
