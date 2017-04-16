@@ -41,7 +41,7 @@ It's a little long, but it clearly indicates that there's no `"vend"` action tha
 
 ```
 Example.idr:31:3:When checking right hand side of vendingMachine with expected type
-        VendingMachineSession ("waiting", "vended")
+        VendingMachineSession ("waiting", const "waiting")
 
 When checking an application of constructor Protocol.>>=:
         Type mismatch between
@@ -67,7 +67,7 @@ When checking an application of constructor Protocol.>>=:
 
         Specifically:
                 Type mismatch between
-                        locate "vend" [("pay", "waiting", "paid"),
+                        locate "vend" [("insert-coin", "waiting", "paid"),
                                        ("return", "paid", "waiting"),
                                        ("select", "paid", "selected"),
                                        ("vend", "selected", "vended")]
