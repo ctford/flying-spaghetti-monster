@@ -52,33 +52,29 @@ Define a session type that enforces valid interactions with a door.
 
 Define a session type that enforces valid interactions with a vending machine.
 
->{-
-> %provide (VendingMachineSession : (Path -> Type)) with
->          Protocol "example/vending-machine.txt"
+> %provide (VendingMachineSession : (Route -> Type)) with Protocol "example/vending-machine.txt"
 
 > ||| An implementation of the protocol.
-> vendingMachine : VendingMachineSession ("waiting", "vended")
-> vendingMachine =
+> vendingMachine : VendingMachineSession ("waiting", const "vended")
+> vendingMachine = do
 
-`Try "hack"` won't compile,
-because it's not a legal action described in [`vending-machine.txt`][vm spec].
+`Try "hack"` wouldn't compile, because it's not a legal action described in [`vending-machine.txt`][vm spec].
 
->   do Try "pay"
->      Try "return"
+>   Do "pay"
+>   Do "return"
 
-`Try "vend"` won't compile,
-because it's not a legal action *in this state*
+`Try "vend"` wouldn't compile, because it's not a legal action *in this state*
 
->      Try "pay"
->      Try "select"
->      Try "vend"
+>   Do "pay"
+>   Do "select"
+>   Do "vend"
 
-> runVendingMachine : VendingMachineSession (a, b) -> List String
-> runVendingMachine (x >>= rest) =
->     runVendingMachine x ++ runVendingMachine (rest True)
-> runVendingMachine (Try x)   = [x]
-> runVendingMachine NoOp         = []
->-}
+> ||| Interpret a VendingMachineSession, assuming happy path.
+> runVendingMachine : VendingMachineSession _ -> List String
+> runVendingMachine NoOp             = []
+> runVendingMachine (Do x)           = [x]
+> runVendingMachine (Try x)          = [x]
+> runVendingMachine (x >>= continue) = (runVendingMachine x) ++ (runVendingMachine $ continue Success)
 
 == Main Executable
 
@@ -91,20 +87,10 @@ because it's not a legal action *in this state*
 >
 >   %access export
 >
->
->   doorExample : IO ()
->   doorExample =
->       runExample "Door" $
->       runDoor (Door 3)
->
->--   vendingMachineExample : IO ()
->--   vendingMachineExample =
->--       runExample "Vending Machine" $
->--       runVendingMachine vendingMachine
->
 >   main : IO ()
->   main = do doorExample
->--             vendingMachineExample
+>   main = do
+>     runExample "Door" $ runDoor (Door 3)
+>     runExample "Vending Machine" $ runVendingMachine vendingMachine
 
  <!-- Named Links -->
 
