@@ -52,7 +52,7 @@ where
           {auto membership : Elem (name, (beginning, happy), (beginning, happy)) transitions} ->
           Command (Choice transitions) (beginning, const happy)
 
-  Noop  : Command (Choice transitions) (beginning, const beginning)
+  NoOp  : Command (Choice transitions) (beginning, const beginning)
 
   (>>=) : Command (Choice transitions) (beginning, continue) ->
           ((result : Result) -> Command (Choice transitions) (continue result, finally)) ->
