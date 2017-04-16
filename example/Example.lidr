@@ -32,12 +32,12 @@ Define a session type that enforces valid interactions with a door.
 
 `Try "smash"` wouldn't compile, because it's not a legal action described in [`door.txt`][door spec].
 
->  Success <- Try "unlock" | Failure => Door retries
->  Ring 3
->  Success <- Try "open"   | Failure => Do "give-up"
->  Do "enter"
+>   Success <- Try "unlock" | Failure => Door retries
+>   Ring 3
+>   Success <- Try "open"   | Failure => Do "give-up"
+>   Do "enter"
 > Door Z = do
->  Do "give-up"
+>   Do "give-up"
 
 `Try "unlock"` wouldn't compile, because it's not a legal action *in this state*.
 
