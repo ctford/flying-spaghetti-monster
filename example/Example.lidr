@@ -79,13 +79,23 @@ Define a session type that enforces valid interactions with a vending machine.
 >   Do "select"
 >   Do "vend"
 
-> ||| Interpret a VendingMachineSession, assuming happy path.
-> runVendingMachine : VendingMachineSession _ -> List String
-> runVendingMachine Succeed          = []
-> runVendingMachine Fail             = []
-> runVendingMachine (Do x)           = [x]
-> runVendingMachine (Try x)          = [x]
-> runVendingMachine (x >>= continue) = (runVendingMachine x) ++ (runVendingMachine $ continue Success)
+> ||| Interpret a VendingMachineSession, requesting input from the user on Try.
+> runVendingMachine : VendingMachineSession _ -> IO Result
+> runVendingMachine Succeed          = do
+>   pure Success
+> runVendingMachine Fail             = do
+>   pure Failure
+> runVendingMachine (Do x)           = do
+>   putStrLn $ x ++ "!"
+>   pure Success
+> runVendingMachine (Try x)          = do
+>   putStrLn $ x ++ "?"
+>   line <- getLine
+>   let result = if line == "y" then Success else Failure
+>   pure result
+> runVendingMachine (x >>= continue) = do
+>   result <- runVendingMachine x
+>   runVendingMachine $ continue result
 
 == Main Executable
 
