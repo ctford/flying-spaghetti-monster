@@ -1,4 +1,0 @@
-===> Door Example
-unlock ring ring ring open enter
-===> Vending Machine Example
-pay return pay select vend
