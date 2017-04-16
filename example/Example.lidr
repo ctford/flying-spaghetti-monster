@@ -20,19 +20,20 @@ Define a session type that enforces valid interactions with a door.
 > ||| Ring the doorbell.
 > ||| @ n the number of times to ring
 > Ring : (n : Nat) -> DoorSession ("closed", const "closed")
-> Ring Z     = NoOp
 > Ring (S remaining) = do
 >   Do "ring"
 >   Ring remaining
+> Ring Z =
+>   NoOp
 
 > ||| An implementation of the protocol.
-> door : Nat -> DoorSession ("locked", const "end")
-> door Z = Do "give-up"
-> door (S retries) = do
+> Door : Nat -> DoorSession ("locked", const "end")
+> Door Z = Do "give-up"
+> Door (S retries) = do
 
 `Try "smash"` wouldn't compile, because it's not a legal action described in [`door.txt`][door spec].
 
->  Success <- Try "unlock" | Failure => door retries
+>  Success <- Try "unlock" | Failure => Door retries
 >  Ring 3
 >  Success <- Try "open"   | Failure => Do "quit"
 >  Do "enter"
