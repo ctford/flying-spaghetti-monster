@@ -47,12 +47,12 @@ Define a session type that enforces valid interactions with a door.
 > runDoor (Do x)           = [x]
 > runDoor (Try x)          = [x]
 > runDoor (x >>= continue) = (runDoor x) ++ (runDoor $ continue Success)
->{-
 
 == Vending Machine Example
 
 Define a session type that enforces valid interactions with a vending machine.
 
+>{-
 > %provide (VendingMachineSession : (Path -> Type)) with
 >          Protocol "example/vending-machine.txt"
 
@@ -78,11 +78,10 @@ because it's not a legal action *in this state*
 >     runVendingMachine x ++ runVendingMachine (rest True)
 > runVendingMachine (Try x)   = [x]
 > runVendingMachine NoOp         = []
+>-}
 
 == Main Executable
 
->-}
->{-
 > namespace Main
 >
 >   private runExample : (name : String) -> (results : List String) -> IO ()
@@ -96,21 +95,18 @@ because it's not a legal action *in this state*
 >   doorExample : IO ()
 >   doorExample =
 >       runExample "Door" $
->       runDoor (door 3)
+>       runDoor (Door 3)
 >
->   vendingMachineExample : IO ()
->   vendingMachineExample =
->       runExample "Vending Machine" $
->       runVendingMachine vendingMachine
+>--   vendingMachineExample : IO ()
+>--   vendingMachineExample =
+>--       runExample "Vending Machine" $
+>--       runVendingMachine vendingMachine
 >
 >   main : IO ()
 >   main = do doorExample
->             vendingMachineExample
-
+>--             vendingMachineExample
 
  <!-- Named Links -->
 
 [door spec]: ./door.txt
 [vm spec]: ./vending-machine.txt
-
->-}
