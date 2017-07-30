@@ -13,12 +13,14 @@ data Command : (String, String) -> Type where
              (() -> Command (middle, end)) ->
              Command (beginning, end)
 
+
 ||| First person: our implementation of the protocol.
 session : Command ("closed", "closed")
-session = do Knock
-             Open
-          -- Knock
-             Close
+session = do
+  Open
+--Knock
+  Close
+
 
 ||| Second person: an evaluator for our implementation.
 run : Command _ -> List String
@@ -27,3 +29,14 @@ run Close = ["close"]
 run Knock = ["knock"]
 run (command >>= continue) =
   (run command) ++ (run $ continue ())
+
+
+||| Alternative first person: knock before entering.
+polite : Nat -> Command ("closed", "closed")
+polite Z = do
+  Open
+  Close
+polite (S knocks) = do
+  Knock
+  polite knocks
+--polite (S knocks)
