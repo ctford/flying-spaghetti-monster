@@ -10,18 +10,18 @@ import Data.List
 
 
 ||| Third person: the protocol itself.
-%provide (DoorSession : (Route -> Type)) with Protocol "door.txt"
+%provide (Session : (Route -> Type)) with Protocol "door.txt"
 
 
 ||| First person: our implementation of the protocol.
-Ring : (n : Nat) -> DoorSession ("closed", const "closed")
+Ring : (n : Nat) -> Session ("closed", const "closed")
 Ring (S remaining) = do
   Do "ring"
   Ring remaining
 Ring Z = do
   Succeed
 
-Door : Nat -> DoorSession ("closed", const "closed")
+Door : Nat -> Session ("closed", const "closed")
 Door (S retries) = do
   Ring 3
   Success <- Try "open" | Failure => Door retries
@@ -38,7 +38,7 @@ queryUser = do
   let result = if line == "y" then Success else Failure
   pure result
 
-runDoor : DoorSession _ -> IO Result
+runDoor : Session _ -> IO Result
 runDoor Succeed          = pure Success
 runDoor Fail             = pure Failure
 runDoor (Do x)           = do

@@ -4,19 +4,19 @@ module StickyDoor
 %default total
 
 ||| Third person: the protocol itself.
-data Command : (String, Bool -> String) -> Type where
-     Open    : Command ("closed", \success => if success then "opened" else "closed")
-     Close   : Command ("opened", const "closed")
-     Knock   : Command ("closed", const "closed")
-     Nothing : Command (a, const a)
+data Session : (String, Bool -> String) -> Type where
+     Open    : Session ("closed", \success => if success then "opened" else "closed")
+     Close   : Session ("opened", const "closed")
+     Knock   : Session ("closed", const "closed")
+     Nothing : Session (a, const a)
 
-     (>>=)   : Command (beginning, decide) ->
-               ((result : Bool) -> Command (decide result, end)) ->
-               Command (beginning, end)
+     (>>=)   : Session (beginning, decide) ->
+               ((result : Bool) -> Session (decide result, end)) ->
+               Session (beginning, end)
 
 
 ||| First person: our implementation of the protocol.
-session : Command ("closed", const "closed")
+session : Session ("closed", const "closed")
 session = do
   success <- Open
   case success of
@@ -25,7 +25,7 @@ session = do
 
 
 ||| Second person: an evaluator for our implementation.
-run : List Bool -> Command _ -> List String
+run : List Bool -> Session _ -> List String
 run _ Open    = ["open"]
 run _ Close   = ["close"]
 run _ Knock   = ["knock"]
@@ -36,7 +36,7 @@ run (result :: results) (command >>= continue) =
 
 
 ||| Alternative first person: keep trying.
-persistent : Nat -> Command ("closed", const "closed")
+persistent : Nat -> Session ("closed", const "closed")
 persistent (S knocks) = do
   success <- Open
   case success of
