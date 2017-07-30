@@ -1,0 +1,9 @@
+package fsm.talk
+
+modules    = ProvidedDoor
+
+main       = ProvidedDoor
+executable = runDoor
+
+sourcedir  = example
+opts       = "-i ../src -X TypeProviders"
