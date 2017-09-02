@@ -34,7 +34,7 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Flying Spaghetti Monster
+                        ## The Flying Spaghetti Monster
 
                         ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
 
@@ -76,6 +76,11 @@
                     </script>
                 </section>
 
+                <section data-markdown>
+                    <script type="text/template">
+                        ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
+                    </script>
+                </section>
 
                 <section data-markdown>
                     <script type="text/template">
@@ -96,21 +101,22 @@
                 <section data-markdown>
                     <script type="text/template">
                         ## Networking code that implements a FSM
-
-                                door.open();
-                                door.knock();
-                                door.close();
+                                function doorProg() {
+                                    door.open();
+                                    door.knock();
+                                    door.close();
+                                }
                     </script>
                 </section>
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Idris code that implements a FSM
+                        ## Idris code that *specifies* and implements a FSM
 
                                 data State = Open | Closed
 
                                 data DoorSession : (State, State) -> Type where
-                                    Open : DoorSession (Closed, Open)
+                                    Open  : DoorSession (Closed, Open)
                                     Close : DoorSession (Open, Closed)
                                     Knock : DoorSession (Closed, Closed)
                                     (>>=) : DoorSession (beginning, middle) ->
@@ -163,7 +169,7 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Idris code that implements a *fallible* FSM
+                        ## Idris code that specifies a *fallible* FSM
 
                                 data State = Open | Closed
                                 data Result = OK | Jammed
