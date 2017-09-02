@@ -198,13 +198,30 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Type providers can let a schema drive your types.
+                        ## Type providers can let an external schema drive your types.
+
+                                #name       from      to       alternate
+                                insert-coin waiting   paid
+                                insert-coin paid      paid
+                                return      paid      waiting
+                                select      paid      selected paid
+                                vend        selected  waiting
+
                     </script>
                 </section>
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Defining a protocol in a text file.
+                        ## You can therefore data-drive your protocol specification.
+
+                                %provide (VendingMachineSession : (Route -> Type)) with Protocol "vending-machine.txt"
+
+                                vendingMachine : VendingMachineSession ("waiting", const "waiting")
+                                vendingMachine = do
+                                  Do "insert-coin"
+                                  Do "insert-coin"
+                                  Success <- Try "select" | Failure => do Do "return"; Fail
+                                  Do "vend"
                     </script>
                 </section>
 
