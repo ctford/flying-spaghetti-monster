@@ -31,6 +31,7 @@
                         [@ctford](https://twitter.com/ctford)/[ThoughtWorks](https://thoughtworks.com)
                     </script>
                 </section>
+
                 <section data-markdown>
                     <script type="text/template">
                         ## Flying Spaghetti Monster
@@ -94,20 +95,151 @@
 
                 <section data-markdown>
                     <script type="text/template">
+                        ## Networking code that implements a FSM
+
+                                door.open();
+                                door.knock();
+                                door.close();
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Idris code that implements a FSM
+
+                                data State = Open | Closed
+
+                                data DoorSession : (State, State) -> Type where
+                                    Open : DoorSession (Closed, Open)
+                                    Close : DoorSession (Open, Closed)
+                                    Knock : DoorSession (Closed, Closed)
+                                    (>>=) : DoorSession (beginning, middle) ->
+                                            (a -> DoorSession (middle, end)) ->
+                                            DoorSession (beginning, end)
+
+                                doorProg : DoorSession (Closed, Closed)
+                                doorProg = do Open; Knock; Close
+                                doorProg = do Knock; Open; Close
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
                         # Fallibility
                     </script>
                 </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## But... a conversation has two sides.
+
+                        What if the door jams?
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Leo Tolstoy
+
+                        Happy families are all alike; every unhappy family is unhappy in its own way.
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Finite State Machines can model protocols
+
+                        ![Finite State Machine example](img/Turnstile_state_machine_colored.svg)
+
+                        [Image by Chetvorno (Public Domain)](https://commons.wikimedia.org/wiki/File:Turnstile_state_machine_colored.svg).
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Idris code that implements a *fallible* FSM
+
+                                data State = Open | Closed
+                                data Result = OK | Jammed
+
+                                data DoorSession : (result : Type) -> (State, result -> State) -> Type where
+                                    Open : DoorSession () (Closed, \x => if (x == OK) then Open else Closed)
+                                    Close : DoorSession () (Open, const Closed)
+                                    Knock : DoorSession () (Closed, const Closed)
+                                    (>>=) : DoorSession a (beginning, next) ->
+                                        ((result : a) -> DoorSession b (next result) finally) ->
+                                        DoorSession b beginning finally
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
+                    </script>
+                </section>
+
                 <section data-markdown>
                     <script type="text/template">
                         # Discoverability
                     </script>
                 </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Type providers can let a schema drive your types.
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Defining a protocol in a text file.
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
+                    </script>
+                </section>
+
                 <section data-markdown>
                     <script type="text/template">
                         # Conclusion
                     </script>
                 </section>
 
+                <section data-markdown>
+                    <script type="text/template">
+                        We're building systems we don't fully understand.
+
+                        We need better ways to think about systems with many, fallible moving parts.
+
+                        Expressive type systems can help.
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## References
+
+                        * [Type-Driven Development with Idris](https://www.manning.com/books/type-driven-development-with-idris)
+                        * [Idris homepage](https://www.idris-lang.org)
+                        * [Type Providers in Idris](http://docs.idris-lang.org/en/latest/guides/type-providers-ffi.html)
+                        * [Multiparty Asynchronous Session Types](http://www.doc.ic.ac.uk/~yoshida/multiparty/multiparty.pdf)
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
+                    </script>
+                </section>
 			</div>
 		</div>
 
