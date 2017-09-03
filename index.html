@@ -44,16 +44,50 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Idris
+                        ![Idris logo](img/idris-logo-small.png)
 
-                        A statically-typed functional programming language where types themselves can be passed to and returned from functions.
+                        Idris is from the Haskell family of functional languages:
+
+                        * The compiler checks the types.
+                        * Functions are values.
+                        * *Types* are values.
                     </script>
                 </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Idris example
+
+                        ```haskell
+                                -- Define the concatenate function.
+                                concatenate : Vect n a -> Vect m a -> Vect (n + m) a
+                                concatenate []        ys = ys
+                                concatenate (x :: xs) ys = x :: concatenate xs ys
+
+                                -- Use it.
+                                concatenate [1, 2, 3] [4, 5, 6]
+                        ```
+                    </script>
+                </section>
+
                 <section data-markdown>
                     <script type="text/template">
                         # Microservices
                     </script>
                 </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Microservices let you do things in small pieces.
+
+                        * Data can be processed a bit at a time.
+                        * Code can be changed a bit at a time.
+                        * Systems can be understood a bit at a time.
+
+                        We gain freedom at the cost of eventual consistency.
+                    </script>
+                </section>
+
                 <section data-markdown>
                     <script type="text/template">
                         ## Greenspun's tenth rule of programming
@@ -61,18 +95,12 @@
                         Any sufficiently complicated C or Fortran program contains an ad-hoc, informally-specified, bug-ridden, slow implementation of half of Common Lisp.
                     </script>
                 </section>
+
                 <section data-markdown>
                     <script type="text/template">
                         ## Ford's tenth rule of programming
 
                         Any sufficiently complicated microservice architecture contains an ad-hoc, informally-specified, bug-ridden, slow implementation of a distributed protocol.
-                    </script>
-                </section>
-                <section data-markdown>
-                    <script type="text/template">
-                        ## Philip Greenspun
-
-                        Sorry, Han-Wen, but there aren't 9 preceding laws. I was just trying to give the rule a memorable name.
                     </script>
                 </section>
 
@@ -101,31 +129,35 @@
                 <section data-markdown>
                     <script type="text/template">
                         ## Networking code that implements a FSM
+                        ```javascript
                                 function doorProg() {
                                     door.open();
                                     door.knock();
                                     door.close();
                                 }
+                        ```
                     </script>
                 </section>
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Idris code that *specifies* and implements a FSM
+                        ## Specify a FSM
 
-                                data State = Open | Closed
+                        ```haskell
+                        -- A type defining what you can do with a door.
+                        data DoorSession : (State, State) -> Type where
+                            Open  : DoorSession (Closed, Open)
+                            Close : DoorSession (Open, Closed)
+                            Knock : DoorSession (Closed, Closed)
+                            (>>=) : DoorSession (beginning, middle) ->
+                                    (a -> DoorSession (middle, end)) ->
+                                    DoorSession (beginning, end)
 
-                                data DoorSession : (State, State) -> Type where
-                                    Open  : DoorSession (Closed, Open)
-                                    Close : DoorSession (Open, Closed)
-                                    Knock : DoorSession (Closed, Closed)
-                                    (>>=) : DoorSession (beginning, middle) ->
-                                            (a -> DoorSession (middle, end)) ->
-                                            DoorSession (beginning, end)
-
-                                doorProg : DoorSession (Closed, Closed)
-                                doorProg = do Open; Knock; Close
-                                doorProg = do Knock; Open; Close
+                        -- Example usage.
+                        doorProg : DoorSession (Closed, Closed)
+                        doorProg = do Open; Knock; Close -- This would not compile!
+                        doorProg = do Knock; Open; Close -- This works just fine.
+                        ```
                     </script>
                 </section>
 
@@ -169,18 +201,18 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Idris code that specifies a *fallible* FSM
+                        ## Specify a fallible FSM
 
-                                data State = Open | Closed
-                                data Result = OK | Jammed
-
-                                data DoorSession : (result : Type) -> (State, result -> State) -> Type where
-                                    Open : DoorSession () (Closed, \x => if (x == OK) then Open else Closed)
-                                    Close : DoorSession () (Open, const Closed)
-                                    Knock : DoorSession () (Closed, const Closed)
-                                    (>>=) : DoorSession a (beginning, next) ->
-                                        ((result : a) -> DoorSession b (next result) finally) ->
-                                        DoorSession b beginning finally
+                        ```haskell
+                        -- A type defining what happens when you use a door.
+                        data DoorSession : (result : Type) -> (State, result -> State) -> Type where
+                            Open : DoorSession () (Closed, \x => if (x == OK) then Open else Closed)
+                            Close : DoorSession () (Open, const Closed)
+                            Knock : DoorSession () (Closed, const Closed)
+                            (>>=) : DoorSession a (beginning, next) ->
+                                ((result : a) -> DoorSession b (next result) finally) ->
+                                DoorSession b beginning finally
+                        ```
                     </script>
                 </section>
 
@@ -212,16 +244,20 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## You can therefore data-drive your protocol specification.
+                        ## Error states can be checked
 
-                                %provide (VendingMachineSession : (Route -> Type)) with Protocol "vending-machine.txt"
+                        ```haskell
+                        -- Import a vending machine type.
+                        %provide (VendingMachineSession : (Route -> Type)) with Protocol "vending-machine.txt"
 
-                                vendingMachine : VendingMachineSession ("waiting", const "waiting")
-                                vendingMachine = do
-                                  Do "insert-coin"
-                                  Do "insert-coin"
-                                  Success <- Try "select" | Failure => do Do "return"; Fail
-                                  Do "vend"
+                        -- Use the type.
+                        vendingMachine : VendingMachineSession ("waiting", const "waiting")
+                        vendingMachine = do
+                          Do "insert-coin"
+                          Do "insert-coin"
+                          Success <- Try "select" | Failure => do Do "return"; Fail
+                          Do "vend"
+                        ```
                     </script>
                 </section>
 
