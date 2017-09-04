@@ -301,7 +301,6 @@
 
                                 #name         from        to         on-error
                                 insert-coin   waiting     paid
-                                insert-coin   paid        paid
                                 return        paid        waiting
                                 select        paid        selected   paid
                                 vend          selected    waiting
@@ -320,7 +319,6 @@
                         -- Implement the session type.
                         vendingMachineProg : VendingMachineSession ("waiting", const "waiting")
                         vendingMachineProg = do
-                            Do "insert-coin"
                             Do "insert-coin"
                             Ok <- Try "select" | Failure => Do "return"
                             Do "vend"
