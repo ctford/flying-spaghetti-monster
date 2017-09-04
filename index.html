@@ -28,7 +28,11 @@
                     <script type="text/template">
                         # Flying Spaghetti Monster
 
-                        [@ctford](https://twitter.com/ctford)/[ThoughtWorks](https://thoughtworks.com)
+                        ## Verifying protocols with types and finite-state machines
+
+                        Chris Ford ([@ctford](https://twitter.com/ctford)) - [ThoughtWorks](https://thoughtworks.com)
+
+                        https://ctford.github.io/flying-spaghetti-monster
                     </script>
                 </section>
 
@@ -38,7 +42,7 @@
 
                         ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
 
-                        [Image by Niklas Jansson (Public Domain)](https://commons.wikimedia.org/wiki/File:Touched_by_His_Noodly_Appendage_HD.jpg).
+                        [Image by Niklas Jansson (Public Domain)](https://commons.wikimedia.org/wiki/File:Touched_by_His_Noodly_Appendage_HD.jpg)
                     </script>
                 </section>
 
@@ -46,8 +50,7 @@
                     <script type="text/template">
                         ![Idris logo](img/idris-logo-small.png)
 
-                        Idris is from the Haskell family of functional languages:
-
+                        [Idris](https://www.idris-lang.org/) is a hipster functional programming language, a bit like Haskell/Scala/F#:
                         * The compiler checks the types.
                         * Functions are values.
                         * *Types* are values.
@@ -78,13 +81,19 @@
 
                 <section data-markdown>
                     <script type="text/template">
+                        Problem of today, wonder from the future.
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
                         # Microservices
                     </script>
                 </section>
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Microservices let you do things in small pieces.
+                        ## Microservices do things in small pieces
 
                         * Data can be processed a bit at a time.
                         * Code can be changed a bit at a time.
@@ -104,7 +113,7 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Ford's tenth rule of programming
+                        ## Ford's tenth rule of microservices
 
                         Any sufficiently complicated microservice architecture contains an ad-hoc, informally-specified, bug-ridden, slow implementation of a distributed protocol.
                     </script>
@@ -118,13 +127,13 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        # Finite State Machines
+                        # Finite-state Machines
                     </script>
                 </section>
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Finite State Machines can model protocols
+                        ## Finite-state Machines can model protocols
 
                         <img style="height: 500px" src="img/door-state-machine.png">
                     </script>
@@ -132,7 +141,7 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Networking code that implements a FSM
+                        ## Networking code that implements a protocol
                         ```javascript
                                 function doorProg() {
                                     door.open();
@@ -145,25 +154,53 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Specify a FSM
+                        ## Specify a protocol
 
                         ```haskell
                         -- A type defining what you can do with a door.
                         data DoorSession : (State, State) -> Type where
+
                             Open  : DoorSession (Closed, Open)
+
                             Close : DoorSession (Open, Closed)
+
                             Knock : DoorSession (Closed, Closed)
+
                             (>>=) : DoorSession (beginning, middle) ->
                                     (a -> DoorSession (middle, end)) ->
                                     DoorSession (beginning, end)
-
-                        -- Example usage.
-                        doorProg : DoorSession (Closed, Closed)
-                        doorProg = do Open; Knock; Close -- This would not compile!
-                        doorProg = do Knock; Open; Close -- This works just fine.
                         ```
                     </script>
                 </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## This does not compile!
+
+                        ```haskell
+                        -- Implement the door protocol incorrectly.
+                        doorProg : DoorSession (Closed, Closed)
+                        doorProg = do Open
+                                      Knock
+                                      Close
+                        ```
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## This compiles!
+
+                        ```haskell
+                        -- Implement the door protocol.
+                        doorProg : DoorSession (Closed, Closed)
+                        doorProg = do Knock
+                                      Open
+                                      Close
+                        ```
+                    </script>
+                </section>
+
 
                 <section data-markdown>
                     <script type="text/template">
@@ -179,7 +216,7 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## But... a conversation has two sides.
+                        ## A conversation has two sides
 
                         What if the door jams?
                     </script>
@@ -195,7 +232,7 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Finite State Machines can model protocols
+                        ## Finite-state Machines can model protocols
 
                         <img style="height: 500px" src="img/door-state-machine.png">
                     </script>
@@ -203,17 +240,21 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Specify a fallible FSM
+                        ## Specify a fallible protocol
 
                         ```haskell
                         -- A type defining what happens when you use a door.
                         data DoorSession : (result : Type) -> (State, result -> State) -> Type where
-                            Open : DoorSession () (Closed, \x => if (x == OK) then Open else Closed)
+
+                            Open : DoorSession () (Closed, \result => if (result == OK) then Open else Closed)
+
                             Close : DoorSession () (Open, const Closed)
+
                             Knock : DoorSession () (Closed, const Closed)
-                            (>>=) : DoorSession a (beginning, next) ->
-                                ((result : a) -> DoorSession b (next result) finally) ->
-                                DoorSession b beginning finally
+
+                            (>>=) : DoorSession a (beginning, choose-next) ->
+                                  ((result : a) -> DoorSession b (choose-next result) finally) ->
+                                  DoorSession b beginning finally
                         ```
                     </script>
                 </section>
@@ -226,38 +267,49 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        # Discoverability
+                        # Distribution
                     </script>
                 </section>
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Type providers can let an external schema drive your types.
+                        ## Type providers
 
-                                #name       from      to       alternate
-                                insert-coin waiting   paid
-                                insert-coin paid      paid
-                                return      paid      waiting
-                                select      paid      selected paid
-                                vend        selected  waiting
+                        * Borrowed from F#.
+                        * Hook into the compiler.
+                        * Generate types from external sources.
+                        * Reduce boilerplate.
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## A protocol as a text file
+
+                                #name         from        to         on-error
+                                insert-coin   waiting     paid
+                                insert-coin   paid        paid
+                                return        paid        waiting
+                                select        paid        selected   paid
+                                vend          selected    waiting
 
                     </script>
                 </section>
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Error states can be checked
+                        ## Error checking is enforced
 
                         ```haskell
                         -- Import a vending machine session type.
                         %provide (VendingMachineSession : (Route -> Type)) with Protocol "vending-machine.txt"
 
-                        -- Use the session type.
-                        vendingMachine : VendingMachineSession ("waiting", const "waiting")
-                        vendingMachine = do
+                        -- Implement the session type.
+                        vendingMachineProg : VendingMachineSession ("waiting", const "waiting")
+                        vendingMachineProg = do
                             Do "insert-coin"
                             Do "insert-coin"
-                            Success <- Try "select" | Failure => do Do "return"; Fail
+                            Success <- Try "select" | Failure => Do "return"
                             Do "vend"
                         ```
                     </script>
@@ -289,6 +341,7 @@
                     <script type="text/template">
                         ## References
 
+                        * [FSM proof-of-concept](https://github.com/ctford/flying-spaghetti-monster)
                         * [Type-Driven Development with Idris](https://www.manning.com/books/type-driven-development-with-idris)
                         * [Idris homepage](https://www.idris-lang.org)
                         * [Type Providers in Idris](http://docs.idris-lang.org/en/latest/guides/type-providers-ffi.html)
@@ -296,11 +349,6 @@
                     </script>
                 </section>
 
-                <section data-markdown>
-                    <script type="text/template">
-                        ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
-                    </script>
-                </section>
 			</div>
 		</div>
 
