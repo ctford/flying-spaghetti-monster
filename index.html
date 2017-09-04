@@ -309,7 +309,7 @@
                         vendingMachineProg = do
                             Do "insert-coin"
                             Do "insert-coin"
-                            Success <- Try "select" | Failure => Do "return"
+                            Ok <- Try "select" | Failure => Do "return"
                             Do "vend"
                         ```
                     </script>
