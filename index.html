@@ -56,6 +56,12 @@
 
                 <section data-markdown>
                     <script type="text/template">
+                        <img style="height: 600px" src="img/tdd-idris-cover.png">
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
                         ## Idris example
 
                         ```haskell
@@ -120,9 +126,7 @@
                     <script type="text/template">
                         ## Finite State Machines can model protocols
 
-                        ![Finite State Machine example](img/Turnstile_state_machine_colored.svg)
-
-                        [Image by Chetvorno (Public Domain)](https://commons.wikimedia.org/wiki/File:Turnstile_state_machine_colored.svg).
+                        <img style="height: 500px" src="img/door-state-machine.png">
                     </script>
                 </section>
 
@@ -193,9 +197,7 @@
                     <script type="text/template">
                         ## Finite State Machines can model protocols
 
-                        ![Finite State Machine example](img/Turnstile_state_machine_colored.svg)
-
-                        [Image by Chetvorno (Public Domain)](https://commons.wikimedia.org/wiki/File:Turnstile_state_machine_colored.svg).
+                        <img style="height: 500px" src="img/door-state-machine.png">
                     </script>
                 </section>
 
@@ -247,16 +249,16 @@
                         ## Error states can be checked
 
                         ```haskell
-                        -- Import a vending machine type.
+                        -- Import a vending machine session type.
                         %provide (VendingMachineSession : (Route -> Type)) with Protocol "vending-machine.txt"
 
-                        -- Use the type.
+                        -- Use the session type.
                         vendingMachine : VendingMachineSession ("waiting", const "waiting")
                         vendingMachine = do
-                          Do "insert-coin"
-                          Do "insert-coin"
-                          Success <- Try "select" | Failure => do Do "return"; Fail
-                          Do "vend"
+                            Do "insert-coin"
+                            Do "insert-coin"
+                            Success <- Try "select" | Failure => do Do "return"; Fail
+                            Do "vend"
                         ```
                     </script>
                 </section>
@@ -309,6 +311,9 @@
 			// More info https://github.com/hakimel/reveal.js#configuration
 			Reveal.initialize({
 				history: true,
+                margin: 0,
+                width: 1600,
+                height: 1024,
 
 				// More info https://github.com/hakimel/reveal.js#dependencies
 				dependencies: [
