@@ -201,7 +201,6 @@
                     </script>
                 </section>
 
-
                 <section data-markdown>
                     <script type="text/template">
                         ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
@@ -255,6 +254,20 @@
                             (>>=) : DoorSession a (beginning, choose-next) ->
                                   ((result : a) -> DoorSession b (choose-next result) finally) ->
                                   DoorSession b beginning finally
+                        ```
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Error checking is enforced
+
+                        ```haskell
+                        -- Implement the fallible door protocol.
+                        doorProg : DoorSession (Closed, const Closed)
+                        doorProg = do Knock
+                                      Ok <- Open | Failure => Nothing
+                                      Close
                         ```
                     </script>
                 </section>
