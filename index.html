@@ -65,28 +65,6 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Idris example
-
-                        ```haskell
-                                -- Define the concatenate function.
-                                concatenate : Vect n a -> Vect m a -> Vect (n + m) a
-                                concatenate []        ys = ys
-                                concatenate (x :: xs) ys = x :: concatenate xs ys
-
-                                -- Use it.
-                                concatenate [1, 2, 3] [4, 5, 6]
-                        ```
-                    </script>
-                </section>
-
-                <section data-markdown>
-                    <script type="text/template">
-                        Problem of today, wonder from the future.
-                    </script>
-                </section>
-
-                <section data-markdown>
-                    <script type="text/template">
                         # Microservices
                     </script>
                 </section>
@@ -198,6 +176,17 @@
                                       Open
                                       Close
                         ```
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## "Types can't help us once the network gets involved"
+
+                        * Fallibility: how do I deal with failure?
+                        * Distribution: how do I get everyone the same script?
+                        * Duality: how do I know the actors are playing their proper parts?
+
                     </script>
                 </section>
 
@@ -328,6 +317,22 @@
 
                 <section data-markdown>
                     <script type="text/template">
+                        # Session types
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Session types
+
+                        * Represent a multi-party interaction as a type.
+                        * Project the global type into a local type for each participant.
+                        * Verify the global interaction via local checks.
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
                         # Conclusion
                     </script>
                 </section>
@@ -350,6 +355,7 @@
                         * [Idris homepage](https://www.idris-lang.org)
                         * [Type Providers in Idris](http://docs.idris-lang.org/en/latest/guides/type-providers-ffi.html)
                         * [Multiparty Asynchronous Session Types](http://www.doc.ic.ac.uk/~yoshida/multiparty/multiparty.pdf)
+                        * [Haskell Session Types with (Almost) No Class](http://users.eecs.northwestern.edu/~jesse/pubs/haskell-session-types/session08.pdf)
                     </script>
                 </section>
 
