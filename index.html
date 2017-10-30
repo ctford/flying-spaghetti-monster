@@ -299,7 +299,7 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Error checking is enforced
+                        ## Types are generated from the text file
 
                         ```haskell
                         -- Import a vending machine session type.
@@ -317,7 +317,7 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        # Session types
+                        # Duality
                     </script>
                 </section>
 
@@ -328,6 +328,49 @@
                         * Represent a multi-party interaction as a type.
                         * Project the global type into a local type for each participant.
                         * Verify the global interaction via local checks.
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Duality can be calculated
+
+                        ```haskell
+                        data ProtocolState : Type
+                        where
+                          Out    : a -> ProtocolState -> ProtocolState
+                          In     : a -> ProtocolState -> ProtocolState
+                          Empty  : ProtocolState
+
+                        dual : ProtocolState -> ProtocolState
+                        dual (Out x r)    = In x $ dual r
+                        dual (In x r)     = Out x $ dual r
+                        dual Empty        = Empty
+                                                ```
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Complementary session types
+
+                        ```haskell
+                        data Channel : (a:Type) -> ProtocolState -> ProtocolState -> Type
+                        where
+                          Send    : a -> Channel () (Out a remaining) remaining
+                          Receive : Channel a (In a remaining) remaining
+
+                          Return  : a -> Channel a Empty Empty
+                          (>>=)   : Channel a before after ->
+                                   (a -> Channel b after finally) ->
+                                   Channel b before finally
+
+                        Server : Protocol -> Type -> Type
+                        Server p a = Channel a p Empty
+
+                        Client : Protocol -> Type -> Type
+                        Client p a = Channel a (dual p) Empty
+                                                ```
                     </script>
                 </section>
 
