@@ -93,21 +93,13 @@
                     </script>
                 </section>
 
-                 <section data-markdown>
-                    <script type="text/template">
-                        ## The Flying Spaghetti Monster
-
-                        ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
-
-                        [Image by Niklas Jansson (Public Domain)](https://commons.wikimedia.org/wiki/File:Touched_by_His_Noodly_Appendage_HD.jpg)
-                    </script>
-                </section>
-
                 <section data-markdown>
                     <script type="text/template">
                         ## Finite-state Machines can model protocols
 
                         ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_cutoff.jpg) <img style="height: 386px" src="img/Door.png">
+
+                        ['Touched By His Noodly Appendage' by Niklas Jansson (Public Domain)](https://commons.wikimedia.org/wiki/File:Touched_by_His_Noodly_Appendage_HD.jpg)
                     </script>
                 </section>
 
@@ -126,17 +118,17 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Specify a protocol
+                        ## ~~Indexed monads~~ Dominads specify a protocol
+
+                        <img style="float: left" src="img/Transitions.png">
 
                         ```haskell
                         -- A type defining what you can do with a door.
                         data DoorSession : (State, State) -> Type where
 
-                            Open  : DoorSession (Closed, Open)
-
-                            Close : DoorSession (Open, Closed)
-
                             Knock : DoorSession (Closed, Closed)
+                            Close : DoorSession (Open, Closed)
+                            Open  : DoorSession (Closed, Open)
 
                             (>>=) : DoorSession (beginning, middle) ->
                                     (a -> DoorSession (middle, end)) ->
@@ -156,6 +148,7 @@
                                       Knock
                                       Close
                         ```
+                        ![Doesn't compile](img/Uncompile.png)
                     </script>
                 </section>
 
@@ -170,6 +163,7 @@
                                       Open
                                       Close
                         ```
+                        ![Compiles](img/Compile.png)
                     </script>
                 </section>
 
@@ -186,6 +180,8 @@
                 <section data-markdown>
                     <script type="text/template">
                         ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
+
+                        ['Touched By His Noodly Appendage' by Niklas Jansson (Public Domain)](https://commons.wikimedia.org/wiki/File:Touched_by_His_Noodly_Appendage_HD.jpg)
                     </script>
                 </section>
 
@@ -219,11 +215,9 @@
                         -- A type defining what happens when you use a door.
                         data DoorSession : (result : Type) -> (State, result -> State) -> Type where
 
-                            Open : DoorSession () (Closed, \result => if (result == OK) then Open else Closed)
-
-                            Close : DoorSession () (Open, const Closed)
-
                             Knock : DoorSession () (Closed, const Closed)
+                            Close : DoorSession () (Open, const Closed)
+                            Open  : DoorSession () (Closed, \result => if (result == OK) then Open else Closed)
 
                             (>>=) : DoorSession a (beginning, choose-next) ->
                                   ((result : a) -> DoorSession b (choose-next result) finally) ->
@@ -243,6 +237,7 @@
                                   Ok <- Open | Failure => Nothing
                                   Close
                         ```
+                        ![Compiles even with nondeterminism](img/Nondeterminism.png)
                     </script>
                 </section>
 
@@ -264,19 +259,17 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## A protocol as a text file
+                        ## The types are generated
+
+                        Text protocol description...
 
                                 #name         from        to         on-error
                                 insert-coin   waiting     paid
                                 return        paid        waiting
                                 select        paid        selected   paid
                                 vend          selected    waiting
-                    </script>
-                </section>
 
-                <section data-markdown>
-                    <script type="text/template">
-                        ## Types are generated from the text file
+                        ...consumed as types
 
                         ```haskell
                         -- Import a vending machine type.
@@ -368,6 +361,8 @@
                 <section data-markdown>
                     <script type="text/template">
                         ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
+
+                        https://ctford.github.io/flying-spaghetti-monster
 
                         https://github.com/ctford/flying-spaghetti-monster
                     </script>
