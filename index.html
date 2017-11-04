@@ -38,22 +38,12 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## The Flying Spaghetti Monster
-
-                        ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
-
-                        [Image by Niklas Jansson (Public Domain)](https://commons.wikimedia.org/wiki/File:Touched_by_His_Noodly_Appendage_HD.jpg)
-                    </script>
-                </section>
-
-                <section data-markdown>
-                    <script type="text/template">
                         ![Idris logo](img/idris-logo-small.png)
 
                         [Idris](https://www.idris-lang.org/) is a hipster functional programming language, a bit like Haskell/Scala/F#:
                         * The compiler checks the types.
                         * Functions are values.
-                        * *Types* are values.
+                        * But also... *types are values*.
                     </script>
                 </section>
 
@@ -99,13 +89,17 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
+                        # Finite-state Machines
                     </script>
                 </section>
 
-                <section data-markdown>
+                 <section data-markdown>
                     <script type="text/template">
-                        # Finite-state Machines
+                        ## The Flying Spaghetti Monster
+
+                        ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
+
+                        [Image by Niklas Jansson (Public Domain)](https://commons.wikimedia.org/wiki/File:Touched_by_His_Noodly_Appendage_HD.jpg)
                     </script>
                 </section>
 
@@ -113,7 +107,7 @@
                     <script type="text/template">
                         ## Finite-state Machines can model protocols
 
-                        <img style="height: 500px" src="img/door-state-machine.png">
+                        <img style="height: 500px" src="img/Door.png">
                     </script>
                 </section>
 
@@ -183,10 +177,9 @@
                     <script type="text/template">
                         ## "Types can't help us once the network gets involved"
 
-                        * Fallibility: how do I deal with failure?
-                        * Distribution: how do I get everyone the same script?
-                        * Duality: how do I know the actors are playing their proper parts?
-
+                        * Fallibility: how can I deal with failure?
+                        * Distribution: how do I communicate the protocol across a heterogeneous system?
+                        * Reciprocity: how do I turn a global protocol into local types?
                     </script>
                 </section>
 
@@ -204,25 +197,17 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## A conversation has two sides
-
-                        What if the door jams?
-                    </script>
-                </section>
-
-                <section data-markdown>
-                    <script type="text/template">
                         ## Leo Tolstoy
 
-                        Happy families are all alike; every unhappy family is unhappy in its own way.
+                        "Happy families are all alike; every unhappy family is unhappy in its own way."
                     </script>
                 </section>
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Finite-state Machines can model protocols
+                        ## Non-deterministic Finite-state Machines can model fallible protocols
 
-                        <img style="height: 500px" src="img/door-state-machine.png">
+                        <img style="height: 500px" src="img/Jam.png">
                     </script>
                 </section>
 
@@ -253,17 +238,11 @@
 
                         ```haskell
                         -- Implement the fallible door protocol.
-                        doorProg : DoorSession (Closed, const Closed)
-                        doorProg = do Knock
-                                      Ok <- Open | Failure => Nothing
-                                      Close
+                        door : DoorSession a (Closed, const Closed)
+                        door = do Knock
+                                  Ok <- Open | Failure => Nothing
+                                  Close
                         ```
-                    </script>
-                </section>
-
-                <section data-markdown>
-                    <script type="text/template">
-                        ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
                     </script>
                 </section>
 
@@ -280,7 +259,6 @@
                         * Borrowed from F#.
                         * Hook into the compiler.
                         * Generate types from external sources.
-                        * Reduce boilerplate.
                     </script>
                 </section>
 
@@ -293,7 +271,6 @@
                                 return        paid        waiting
                                 select        paid        selected   paid
                                 vend          selected    waiting
-
                     </script>
                 </section>
 
@@ -302,12 +279,11 @@
                         ## Types are generated from the text file
 
                         ```haskell
-                        -- Import a vending machine session type.
+                        -- Import a vending machine type.
                         %provide (VendingMachineSession : (Route -> Type)) with Protocol "vending-machine.txt"
 
-                        -- Implement the session type.
-                        vendingMachineProg : VendingMachineSession ("waiting", const "waiting")
-                        vendingMachineProg = do
+                        vendingMachine : VendingMachineSession ("waiting", const "waiting")
+                        vendingMachine = do
                             Do "insert-coin"
                             Ok <- Try "select" | Failure => Do "return"
                             Do "vend"
@@ -317,7 +293,7 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        # Duality
+                        # Reciprocity
                     </script>
                 </section>
 
@@ -327,50 +303,29 @@
 
                         * Represent a multi-party interaction as a type.
                         * Project the global type into a local type for each participant.
-                        * Verify the global interaction via local checks.
+                        * Verify the global protocol via local checks.
                     </script>
                 </section>
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Duality can be calculated
+                        ## Reciprocal sessions
 
                         ```haskell
-                        data ProtocolState : Type
-                        where
-                          Out    : a -> ProtocolState -> ProtocolState
-                          In     : a -> ProtocolState -> ProtocolState
-                          Empty  : ProtocolState
-
-                        dual : ProtocolState -> ProtocolState
-                        dual (Out x r)    = In x $ dual r
-                        dual (In x r)     = Out x $ dual r
-                        dual Empty        = Empty
-                                                ```
-                    </script>
-                </section>
-
-                <section data-markdown>
-                    <script type="text/template">
-                        ## Complementary session types
+                        -- Flip a series of session states.
+                        dual : SessionState -> SessionState
+                        dual (Out x remainder) = In x (dual remainder)
+                        dual (In x remainder)  = Out x (dual remainder)
+                        dual Empty             = Empty
+                        ```
 
                         ```haskell
-                        data Channel : (a:Type) -> ProtocolState -> ProtocolState -> Type
-                        where
-                          Send    : a -> Channel () (Out a remaining) remaining
-                          Receive : Channel a (In a remaining) remaining
+                        Server : SessionState -> Type
+                        Server start = Session (start, Empty)
 
-                          Return  : a -> Channel a Empty Empty
-                          (>>=)   : Channel a before after ->
-                                   (a -> Channel b after finally) ->
-                                   Channel b before finally
-
-                        Server : Protocol -> Type -> Type
-                        Server p a = Channel a p Empty
-
-                        Client : Protocol -> Type -> Type
-                        Client p a = Channel a (dual p) Empty
-                                                ```
+                        Client : SessionState -> Type
+                        Client start = Session ((dual start), Empty)
+                        ```
                     </script>
                 </section>
 
@@ -394,9 +349,7 @@
                     <script type="text/template">
                         ## Where to go next
 
-                        * Verifying FSMs: Oskar Wickstrom's talk _Finite-state machines? Your compiler wants in!_, 11:20 today.
-                        * Dependent types: David Christiansen's talk _A Little Taste of Types_, 16:20 today.
-                        * Channels: Michael Sperber's talk _Concurrent ML_, 15:30 tomorrow.
+                        ![Connected sessions](img/Next.png)
                     </script>
                 </section>
 
