@@ -124,15 +124,15 @@
 
                         ```haskell
                         -- A type defining what you can do with a door.
-                        data DoorSession : (State, State) -> Type where
+                        data DoorSession : Type -> (State, State) -> Type where
 
-                            Knock : DoorSession (Closed, Closed)
-                            Close : DoorSession (Open, Closed)
-                            Open  : DoorSession (Closed, Open)
+                            Knock : DoorSession () (Closed, Closed)
+                            Close : DoorSession () (Open, Closed)
+                            Open  : DoorSession () (Closed, Open)
 
-                            (>>=) : DoorSession (beginning, middle) ->
-                                    (a -> DoorSession (middle, end)) ->
-                                    DoorSession (beginning, end)
+                            (>>=) : DoorSession a (beginning, middle) ->
+                                    (a -> DoorSession b (middle, end)) ->
+                                    DoorSession b (beginning, end)
                         ```
                     </script>
                 </section>
@@ -143,7 +143,7 @@
 
                         ```haskell
                         -- Implement the door protocol incorrectly.
-                        doorProg : DoorSession (Closed, Closed)
+                        doorProg : DoorSession a (Closed, Closed)
                         doorProg = do Open
                                       Knock
                                       Close
@@ -158,7 +158,7 @@
 
                         ```haskell
                         -- Implement the door protocol.
-                        doorProg : DoorSession (Closed, Closed)
+                        doorProg : DoorSession a (Closed, Closed)
                         doorProg = do Knock
                                       Open
                                       Close
@@ -313,11 +313,11 @@
                         ```
 
                         ```haskell
-                        Server : SessionState -> Type
-                        Server start = Session (start, Empty)
+                        Server : Type -> SessionState -> Type
+                        Server a start = Session a (start, Empty)
 
-                        Client : SessionState -> Type
-                        Client start = Session ((dual start), Empty)
+                        Client : Type -> SessionState -> Type
+                        Client a start = Session a ((dual start), Empty)
                         ```
                     </script>
                 </section>
