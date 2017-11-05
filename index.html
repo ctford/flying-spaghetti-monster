@@ -288,8 +288,8 @@
                         -- Import a vending machine type.
                         %provide (VendingMachineSession : (Route -> Type)) with Protocol "vending-machine.txt"
 
-                        vendingMachine : VendingMachineSession ("waiting", const "waiting")
-                        vendingMachine = do
+                        vendingMachineProg : VendingMachineSession ("waiting", const "waiting")
+                        vendingMachineProg = do
                             Do "insert-coin"
                             True <- Try "select" | False => Do "return-coin"
                             Do "vend"
