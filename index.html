@@ -110,9 +110,9 @@
                         ## Networking code that implements a protocol
                         ```javascript
                         function doorProg(door) {
-                          door.open();
-                          door.knock();
-                          door.close();
+                            door.open();
+                            door.knock();
+                            door.close();
                         }
                         ```
                     </script>
@@ -130,8 +130,8 @@
                         data DoorSession : Type -> (State, State) -> Type where
 
                             Knock : DoorSession () (Closed, Closed)
-                            Close : DoorSession () (Open, Closed)
-                            Open  : DoorSession () (Closed, Open)
+                            Close : DoorSession () (Opened, Closed)
+                            Open  : DoorSession () (Closed, Opened)
 
                             (>>=) : DoorSession a (beginning, middle) ->
                                     (a -> DoorSession b (middle, end)) ->
@@ -147,9 +147,10 @@
                         ```haskell
                         -- Implement the door protocol incorrectly.
                         doorProg : DoorSession a (Closed, Closed)
-                        doorProg = do Open
-                                      Knock
-                                      Close
+                        doorProg = do
+                            Open
+                            Knock
+                            Close
                         ```
                         ![Doesn't compile](img/Uncompile.png)
                     </script>
@@ -162,9 +163,10 @@
                         ```haskell
                         -- Implement the door protocol.
                         doorProg : DoorSession a (Closed, Closed)
-                        doorProg = do Knock
-                                      Open
-                                      Close
+                        doorProg = do
+                            Knock
+                            Open
+                            Close
                         ```
                         ![Compiles](img/Compile.png)
                     </script>
@@ -218,13 +220,13 @@
                         -- A type defining what happens when you use a door.
                         data DoorSession : (result : Type) -> (State, result -> State) -> Type where
 
-                            Knock : DoorSession () (Closed, const Closed)
-                            Close : DoorSession () (Open, const Closed)
-                            Open  : DoorSession () (Closed, \result => if (result == OK) then Open else Closed)
+                            Knock : DoorSession ()   (Closed, const Closed)
+                            Close : DoorSession ()   (Opened, const Closed)
+                            Open  : DoorSession Bool (Closed, \successful => if successful then Opened else Closed)
 
-                            (>>=) : DoorSession a (beginning, choose-next) ->
-                                  ((result : a) -> DoorSession b (choose-next result) finally) ->
-                                  DoorSession b beginning finally
+                            (>>=) : DoorSession a (beginning, chooseNext) ->
+                                    ((result : a) -> DoorSession b (chooseNext result) finally) ->
+                                    DoorSession b beginning finally
                         ```
                     </script>
                 </section>
@@ -235,10 +237,11 @@
 
                         ```haskell
                         -- Implement the fallible door protocol.
-                        door : DoorSession a (Closed, const Closed)
-                        door = do Knock
-                                  Ok <- Open | Failure => Nothing
-                                  Close
+                        doorProg : DoorSession a (Closed, const Closed)
+                        doorProg = do
+                            Knock
+                            True <- Open | False => DoNothing
+                            Close
                         ```
                         ![Compiles even with nondeterminism](img/Nondeterminism.png)
                     </script>
@@ -269,7 +272,7 @@
                         ```markdown
                         #name         from        to         on-error
                         insert-coin   waiting     paid
-                        return        paid        waiting
+                        return-coin   paid        waiting
                         select        paid        selected   paid
                         vend          selected    waiting
                         ```
@@ -283,7 +286,7 @@
                         vendingMachine : VendingMachineSession ("waiting", const "waiting")
                         vendingMachine = do
                             Do "insert-coin"
-                            Ok <- Try "select" | Failure => Do "return"
+                            True <- Try "select" | False => Do "return-coin"
                             Do "vend"
                         ```
                     </script>
@@ -400,4 +403,3 @@
 		</script>
 	</body>
 </html>
-
