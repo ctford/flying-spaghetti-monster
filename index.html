@@ -127,8 +127,7 @@
                     <script type="text/template">
                         ## ~~Indexed monads~~ Dominads specify a protocol
 
-                        <style> .reveal pre { box-shadow: none;} </style>
-                        <img style="float: left" src="img/Transitions.png">
+                        Each transition is paramatised by its **return type**, its **entry state** and its **exit state**.
 
                         ```haskell
                         -- A type defining what you can do with a door.
@@ -142,6 +141,7 @@
                                     (a -> DoorSession b (middle, end)) ->
                                     DoorSession b (beginning, end)
                         ```
+                        <img src="img/Transitions.png">
                     </script>
                 </section>
 
