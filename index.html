@@ -323,6 +323,8 @@
                         data SessionState : Type where
                             Send     : a -> SessionState -> SessionState
                             Receive  : a -> SessionState -> SessionState
+                            Accept   : SessionState -> SessionState -> SessionState
+                            Select   : SessionState -> SessionState -> SessionState
                             Finished : SessionState
                         ```
 
@@ -332,6 +334,8 @@
                         dual : SessionState -> SessionState
                         dual (Send x remainder)    = Receive x (dual remainder)
                         dual (Receive x remainder) = Send x (dual remainder)
+                        dual (Accept eenie meenie) = Select (dual eenie) (dual meenie)
+                        dual (Select eenie meenie) = Accept (dual eenie) (dual meenie)
                         dual Finished              = Finished
                         ```
                     </script>
@@ -342,11 +346,17 @@
                         ## Reciprocal protocol states
 
                         ```haskell
-                        adder : SessionState
-                        adder = (Receive Integer (Receive Integer (Send Integer Finished)))
+                        Add : SessionState
+                        Add = (Receive Integer (Receive Integer (Send Integer Finished)))
 
-                        addee : SessionState
-                        addee = dual adder -- (Send Integer (Send Integer (Receive Integer Finished)))
+                        Negate : SessionState
+                        Negate = (Receive Integer (Send Integer Finished))
+
+                        Calculator : SessionState
+                        Calculator = Accept Addition Negation
+
+                        Calculatee : SessionState
+                        Calculatee = dual Calculator
                         ```
                     </script>
                 </section>
