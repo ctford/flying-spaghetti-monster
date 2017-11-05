@@ -109,11 +109,11 @@
                     <script type="text/template">
                         ## Networking code that implements a protocol
                         ```javascript
-                                function doorProg() {
-                                    door.open();
-                                    door.knock();
-                                    door.close();
-                                }
+                        function doorProg(door) {
+                          door.open();
+                          door.knock();
+                          door.close();
+                        }
                         ```
                     </script>
                 </section>
@@ -266,11 +266,13 @@
 
                         Text protocol description...
 
-                                #name         from        to         on-error
-                                insert-coin   waiting     paid
-                                return        paid        waiting
-                                select        paid        selected   paid
-                                vend          selected    waiting
+                        ```markdown
+                        #name         from        to         on-error
+                        insert-coin   waiting     paid
+                        return        paid        waiting
+                        select        paid        selected   paid
+                        vend          selected    waiting
+                        ```
 
                         ...consumed as types
 
