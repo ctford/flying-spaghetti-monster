@@ -315,22 +315,38 @@
 
                 <section data-markdown>
                     <script type="text/template">
-                        ## Reciprocal sessions
+                        ## Inverting sessions
+
+                        We can build up a succession of protocol states like a list...
 
                         ```haskell
-                        -- Flip a series of session states.
-                        dual : SessionState -> SessionState
-                        dual (Out x remainder) = In x (dual remainder)
-                        dual (In x remainder)  = Out x (dual remainder)
-                        dual Empty             = Empty
+                        data SessionState : Type where
+                            Send     : a -> SessionState -> SessionState
+                            Receive  : a -> SessionState -> SessionState
+                            Finished : SessionState
                         ```
 
-                        ```haskell
-                        Server : Type -> SessionState -> Type
-                        Server a start = Session a (start, Empty)
+                        ...and flip the channel around to get the dual protocol.
 
-                        Client : Type -> SessionState -> Type
-                        Client a start = Session a ((dual start), Empty)
+                        ```haskell
+                        dual : SessionState -> SessionState
+                        dual (Send x remainder)    = Receive x (dual remainder)
+                        dual (Receive x remainder) = Send x (dual remainder)
+                        dual Finished              = Finished
+                        ```
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Reciprocal protocol states
+
+                        ```haskell
+                        adder : SessionState
+                        adder = (Receive Integer (Receive Integer (Send Integer Finished)))
+
+                        addee : SessionState
+                        addee = dual adder -- (Send Integer (Send Integer (Receive Integer Finished)))
                         ```
                     </script>
                 </section>
