@@ -131,7 +131,7 @@
 
                         ```haskell
                         -- A type defining what you can do with a door.
-                        data DoorSession : Type -> (State, State) -> Type where
+                        data DoorSession : (result : Type) -> (State, State) -> Type where
 
                             Knock : DoorSession () (Closed, Closed)
                             Close : DoorSession () (Opened, Closed)
@@ -182,16 +182,14 @@
                         ## "Types can't help us once the network gets involved"
 
                         1. Fallibility: how can I deal with failure?
-                        2. Distribution: how do I communicate the protocol across a heterogeneous system?
-                        3. Reciprocity: how do I turn a global protocol into local types?
+                        2. Distribution: how can I communicate the protocol across a heterogeneous system?
+                        3. Reciprocity: how can I turn a global protocol into local expectations?
                     </script>
                 </section>
 
                 <section data-markdown>
                     <script type="text/template">
                         ![Touched By His Noodly Appendage](img/Touched_by_His_Noodly_Appendage_800.jpg)
-
-                        ['Touched By His Noodly Appendage' by Niklas Jansson (Public Domain)](https://commons.wikimedia.org/wiki/File:Touched_by_His_Noodly_Appendage_HD.jpg)
                     </script>
                 </section>
 
@@ -221,6 +219,8 @@
                     <script type="text/template">
                         ## Specify a fallible protocol
 
+                        Each transition is paramatised by its **return type**, its **entry state** and **a function choosing its exit state**.
+
                         ```haskell
                         -- A type defining what happens when you use a door.
                         data DoorSession : (result : Type) -> (State, result -> State) -> Type where
@@ -229,8 +229,8 @@
                             Close : DoorSession ()   (Opened, const Closed)
                             Open  : DoorSession Bool (Closed, \successful => if successful then Opened else Closed)
 
-                            (>>=) : DoorSession a (beginning, chooseNext) ->
-                                    ((result : a) -> DoorSession b (chooseNext result) finally) ->
+                            (>>=) : DoorSession a (beginning, choose) ->
+                                    ((result : a) -> DoorSession b (choose result) finally) ->
                                     DoorSession b beginning finally
                         ```
                     </script>
