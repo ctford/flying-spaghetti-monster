@@ -321,8 +321,8 @@
 
                         ```haskell
                         data SessionState : Type where
-                            Send     : a -> SessionState -> SessionState
-                            Receive  : a -> SessionState -> SessionState
+                            Send     : Type -> SessionState -> SessionState
+                            Receive  : Type -> SessionState -> SessionState
                             Accept   : SessionState -> SessionState -> SessionState
                             Select   : SessionState -> SessionState -> SessionState
                             Finished : SessionState
@@ -332,8 +332,8 @@
 
                         ```haskell
                         dual : SessionState -> SessionState
-                        dual (Send x remainder)    = Receive x (dual remainder)
-                        dual (Receive x remainder) = Send x (dual remainder)
+                        dual (Send a remainder)    = Receive a (dual remainder)
+                        dual (Receive a remainder) = Send a (dual remainder)
                         dual (Accept eenie meenie) = Select (dual eenie) (dual meenie)
                         dual (Select eenie meenie) = Accept (dual eenie) (dual meenie)
                         dual Finished              = Finished
@@ -346,11 +346,11 @@
                         ## Reciprocal protocol states
 
                         ```haskell
-                        Add : SessionState
-                        Add = (Receive Integer (Receive Integer (Send Integer Finished)))
+                        Addition : SessionState
+                        Addition = (Receive Integer (Receive Integer (Send Integer Finished)))
 
-                        Negate : SessionState
-                        Negate = (Receive Integer (Send Integer Finished))
+                        Negation : SessionState
+                        Negation = (Receive Integer (Send Integer Finished))
 
                         Calculator : SessionState
                         Calculator = Accept Addition Negation
